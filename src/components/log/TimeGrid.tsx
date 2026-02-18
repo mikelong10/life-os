@@ -372,10 +372,10 @@ export function TimeGrid({ date }: { date: string }) {
           ref={gridRef}
           tabIndex={0}
           role="grid"
-          className="flex-1 min-w-0 outline-none"
+          className="flex flex-col flex-1 min-w-0 min-h-0 outline-none"
           onKeyDown={handleKeyDown}
         >
-          <ScrollArea className="h-[calc(100vh-8rem)] [&_[data-slot=scroll-area-viewport]>div]:block!">
+          <ScrollArea className="flex-1 min-h-0 [&_[data-slot=scroll-area-viewport]>div]:block!">
             <div style={{ paddingBottom: isMobile && editorSlot !== null ? bottomPanelHeight : 0 }}>
               {Array.from({ length: SLOTS_PER_DAY }, (_, i) => {
                 const slot = slotMap.get(i);
