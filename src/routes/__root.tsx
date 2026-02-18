@@ -1,27 +1,15 @@
 import { useEffect } from "react";
 import {
-  createRootRoute,
+  createRootRouteWithContext,
   Outlet,
-  useNavigate,
-  useRouterState,
+  redirect,
 } from "@tanstack/react-router";
-import {
-  ConvexReactClient,
-  useConvexAuth,
-  useMutation,
-  useQuery,
-} from "convex/react";
-import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
+import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { AppShell } from "@/components/layout/AppShell";
-import { authClient } from "@/lib/auth-client";
 import { api } from "../../convex/_generated/api";
-
-const convex = new ConvexReactClient(
-  import.meta.env.VITE_CONVEX_URL as string,
-  { expectAuth: true },
-);
+import type { AuthContext } from "../main";
 
 function SeedCategories() {
   const categories = useQuery(api.categories.list);
@@ -36,59 +24,54 @@ function SeedCategories() {
   return null;
 }
 
-function AuthGate() {
+function RootComponent() {
   const { isAuthenticated, isLoading } = useConvexAuth();
-  const navigate = useNavigate();
-  const router = useRouterState();
-  const currentPath = router.location.pathname;
-  const isLoginPage = currentPath === "/login";
-
-  useEffect(() => {
-    if (isLoading) return;
-    if (!isAuthenticated && !isLoginPage) {
-      navigate({ to: "/login" });
-    }
-    if (isAuthenticated && isLoginPage) {
-      navigate({ to: "/log" });
-    }
-  }, [isAuthenticated, isLoading, isLoginPage, navigate]);
 
   if (isLoading) {
     return (
-      <div className="flex h-svh items-center justify-center">
-        <div className="text-muted-foreground text-sm font-mono">
-          Loading...
+      <ThemeProvider defaultTheme="system">
+        <div className="flex h-svh items-center justify-center">
+          <div className="text-muted-foreground text-sm font-mono">
+            Loading...
+          </div>
         </div>
-      </div>
+      </ThemeProvider>
     );
   }
 
   if (!isAuthenticated) {
-    return <Outlet />;
+    return (
+      <ThemeProvider defaultTheme="system">
+        <TooltipProvider>
+          <Outlet />
+        </TooltipProvider>
+      </ThemeProvider>
+    );
   }
 
   return (
-    <>
-      <SeedCategories />
-      <AppShell>
-        <Outlet />
-      </AppShell>
-    </>
+    <ThemeProvider defaultTheme="system">
+      <TooltipProvider>
+        <SeedCategories />
+        <AppShell>
+          <Outlet />
+        </AppShell>
+      </TooltipProvider>
+    </ThemeProvider>
   );
 }
 
-function RootComponent() {
-  return (
-    <ConvexBetterAuthProvider client={convex} authClient={authClient}>
-      <ThemeProvider defaultTheme="system">
-        <TooltipProvider>
-          <AuthGate />
-        </TooltipProvider>
-      </ThemeProvider>
-    </ConvexBetterAuthProvider>
-  );
-}
-
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<{ auth: AuthContext }>()({
   component: RootComponent,
+  beforeLoad: ({ context, location }) => {
+    if (context.auth.isLoading) return;
+    // Don't redirect during cross-domain token exchange (OAuth callback)
+    if (location.searchStr?.includes("__cross_domain_token")) return;
+    if (
+      !context.auth.isAuthenticated &&
+      location.pathname !== "/login"
+    ) {
+      throw redirect({ to: "/login" });
+    }
+  },
 });
