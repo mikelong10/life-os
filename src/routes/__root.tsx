@@ -1,12 +1,15 @@
 import { useEffect } from "react";
-import { createRootRoute, Outlet } from "@tanstack/react-router";
-import { ConvexProvider, ConvexReactClient, useMutation, useQuery } from "convex/react";
+import {
+  createRootRouteWithContext,
+  Outlet,
+  redirect,
+} from "@tanstack/react-router";
+import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { AppShell } from "@/components/layout/AppShell";
 import { api } from "../../convex/_generated/api";
-
-const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
+import type { AuthContext } from "../main";
 
 function SeedCategories() {
   const categories = useQuery(api.categories.list);
@@ -22,20 +25,53 @@ function SeedCategories() {
 }
 
 function RootComponent() {
-  return (
-    <ConvexProvider client={convex}>
+  const { isAuthenticated, isLoading } = useConvexAuth();
+
+  if (isLoading) {
+    return (
+      <ThemeProvider defaultTheme="system">
+        <div className="flex h-svh items-center justify-center">
+          <div className="text-muted-foreground text-sm font-mono">
+            Loading...
+          </div>
+        </div>
+      </ThemeProvider>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
       <ThemeProvider defaultTheme="system">
         <TooltipProvider>
-          <SeedCategories />
-          <AppShell>
-            <Outlet />
-          </AppShell>
+          <Outlet />
         </TooltipProvider>
       </ThemeProvider>
-    </ConvexProvider>
+    );
+  }
+
+  return (
+    <ThemeProvider defaultTheme="system">
+      <TooltipProvider>
+        <SeedCategories />
+        <AppShell>
+          <Outlet />
+        </AppShell>
+      </TooltipProvider>
+    </ThemeProvider>
   );
 }
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<{ auth: AuthContext }>()({
   component: RootComponent,
+  beforeLoad: ({ context, location }) => {
+    if (context.auth.isLoading) return;
+    // Don't redirect during cross-domain token exchange (OAuth callback)
+    if (location.searchStr?.includes("__cross_domain_token")) return;
+    if (
+      !context.auth.isAuthenticated &&
+      location.pathname !== "/login"
+    ) {
+      throw redirect({ to: "/login" });
+    }
+  },
 });
