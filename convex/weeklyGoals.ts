@@ -1,4 +1,4 @@
-import { query, mutation, QueryCtx, MutationCtx } from "./_generated/server";
+import { query, mutation, type QueryCtx, type MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
 
 async function getAuthUserId(ctx: QueryCtx | MutationCtx): Promise<string> {
