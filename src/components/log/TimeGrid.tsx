@@ -140,8 +140,8 @@ export function TimeGrid({ date }: { date: string }) {
   const handleClearSlot = useCallback(async () => {
     if (editorSlot === null) return;
     await removeSlot({ date, slotIndex: editorSlot });
-    closeEditor();
-  }, [editorSlot, date, removeSlot, closeEditor]);
+    if (!isMobile) closeEditor();
+  }, [editorSlot, date, removeSlot, closeEditor, isMobile]);
 
   const handleNoteBlur = useCallback(async () => {
     if (!activeSlot) return;
@@ -296,14 +296,26 @@ export function TimeGrid({ date }: { date: string }) {
         <span className="text-xs font-mono text-muted-foreground">
           {slotIndexToTimeRange(editorSlot)}
         </span>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-6 w-6 p-0"
-          onClick={closeEditor}
-        >
-          <X className="h-3.5 w-3.5" />
-        </Button>
+        <div className="flex items-center gap-1">
+          {isMobile && activeCategoryId && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 px-1.5 text-xs text-muted-foreground hover:text-destructive"
+              onClick={handleClearSlot}
+            >
+              Clear slot
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 w-6 p-0"
+            onClick={closeEditor}
+          >
+            <X className="h-3.5 w-3.5" />
+          </Button>
+        </div>
       </div>
       <div className="p-3 space-y-3">
         <CategoryPicker
@@ -327,7 +339,7 @@ export function TimeGrid({ date }: { date: string }) {
             }}
           />
         </div>
-        {activeCategoryId && (
+        {!isMobile && activeCategoryId && (
           <Button
             variant="ghost"
             size="sm"
