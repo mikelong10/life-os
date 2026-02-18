@@ -3,7 +3,7 @@ import {
   CalendarDays,
   BarChart3,
   Target,
-  Tags,
+  Settings,
 } from "lucide-react";
 import {
   SidebarProvider,
@@ -15,10 +15,8 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarHeader,
-  SidebarFooter,
   SidebarInset,
   SidebarTrigger,
-  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { MobileNav } from "./MobileNav";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
@@ -28,6 +26,7 @@ const NAV_ITEMS = [
   { to: "/log", label: "Log", icon: CalendarDays },
   { to: "/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/planning", label: "Planning", icon: Target },
+  { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -80,23 +79,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
-        <SidebarFooter>
-          <SidebarSeparator />
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={currentPath === "/categories"}
-                tooltip="Categories"
-              >
-                <Link to="/categories">
-                  <Tags />
-                  <span>Categories</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarFooter>
       </Sidebar>
       <SidebarInset>
         <header className="flex h-10 shrink-0 items-center justify-between border-b px-4">

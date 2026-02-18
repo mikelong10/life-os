@@ -1,11 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { CalendarDays, BarChart3, Target } from "lucide-react";
+import { CalendarDays, BarChart3, Target, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   { to: "/log", label: "Log", icon: CalendarDays },
   { to: "/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/planning", label: "Planning", icon: Target },
+  { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
 
 export function MobileNav({ currentPath }: { currentPath: string }) {
