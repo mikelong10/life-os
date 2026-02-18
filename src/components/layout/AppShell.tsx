@@ -5,6 +5,7 @@ import {
   BarChart3,
   Target,
   Settings,
+  LogOut,
 } from "lucide-react";
 import {
   SidebarProvider,
@@ -23,6 +24,7 @@ import {
 import { MobileNav } from "./MobileNav";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { authClient } from "@/lib/auth-client";
 import { api } from "../../../convex/_generated/api";
 
 const NAV_ITEMS = [
@@ -51,20 +53,27 @@ function UserProfileFooter() {
         <img
           src={user.image}
           alt={user.name ?? "User"}
-          className="h-7 w-7 shrink-0 rounded-full object-cover"
+          className="h-9 w-9 shrink-0 rounded-full object-cover"
           referrerPolicy="no-referrer"
         />
       ) : (
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-medium">
           {initials}
         </div>
       )}
       <div className="flex min-w-0 flex-col group-data-[collapsible=icon]:hidden">
-        <span className="truncate text-xs font-medium">{user.name}</span>
-        <span className="truncate text-[10px] text-muted-foreground">
+        <span className="truncate text-sm font-medium">{user.name}</span>
+        <span className="truncate text-xs text-muted-foreground">
           {user.email}
         </span>
       </div>
+      <button
+        onClick={() => authClient.signOut()}
+        className="ml-auto shrink-0 rounded-md p-1 text-muted-foreground hover:text-foreground group-data-[collapsible=icon]:hidden"
+        title="Sign out"
+      >
+        <LogOut className="h-4 w-4" />
+      </button>
     </div>
   );
 }
