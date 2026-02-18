@@ -3,7 +3,6 @@ import { PieChart, Pie, Cell } from "recharts";
 import {
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
 import type { Doc } from "../../../convex/_generated/dataModel";
@@ -50,11 +49,26 @@ export function CategoryPieChart({
     <ChartContainer config={chartConfig} className="h-64 w-full">
       <PieChart>
         <ChartTooltip
-          content={
-            <ChartTooltipContent
-              formatter={(value) => `${value}h`}
-            />
-          }
+          content={({ active, payload }) => {
+            if (!active || !payload?.length) return null;
+            const entry = payload[0];
+            return (
+              <div className="rounded-md border bg-popover px-3 py-2 shadow-md">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="h-3 w-3 shrink-0 rounded-sm"
+                    style={{ backgroundColor: entry.payload.fill }}
+                  />
+                  <span className="text-sm font-mono text-popover-foreground">
+                    {entry.name}
+                  </span>
+                  <span className="text-sm font-mono font-semibold text-popover-foreground">
+                    {entry.value}h
+                  </span>
+                </div>
+              </div>
+            );
+          }}
         />
         <Pie
           data={data}
