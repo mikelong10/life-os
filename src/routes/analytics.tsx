@@ -177,24 +177,6 @@ function AnalyticsPage() {
             </div>
           </div>
 
-          <div className="rounded-lg border bg-card p-4">
-            <h3 className="mb-3 text-sm font-mono font-medium text-muted-foreground">
-              Legend
-            </h3>
-            <div className="flex flex-wrap gap-x-4 gap-y-2">
-              {(categories as Doc<"categories">[]).map((cat) => (
-                <div key={cat._id} className="flex items-center gap-1.5">
-                  <span
-                    className="h-3 w-3 shrink-0 rounded-sm"
-                    style={{ backgroundColor: cat.color }}
-                  />
-                  <span className="text-xs font-mono text-muted-foreground">
-                    {cat.name}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
         </>
       )}
     </div>

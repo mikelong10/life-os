@@ -2,7 +2,7 @@ import { memo } from "react";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { slotIndexToTime } from "@/lib/slotUtils";
 import { cn } from "@/lib/utils";
-import { StickyNote } from "lucide-react";
+
 
 interface TimeSlotRowProps {
   slotIndex: number;
@@ -42,7 +42,7 @@ export const TimeSlotRow = memo(function TimeSlotRow({
       data-slot-index={slotIndex}
       onClick={handleClick}
       className={cn(
-        "flex items-center gap-3 border-b px-3 py-1.5 cursor-pointer transition-colors",
+        "flex max-w-full items-center gap-3 border-b px-3 py-1.5 cursor-pointer transition-colors overflow-hidden",
         "hover:bg-accent/50",
         isFocused && "ring-1 ring-primary ring-inset",
         isSelected && "bg-primary/10"
@@ -57,9 +57,11 @@ export const TimeSlotRow = memo(function TimeSlotRow({
             className="h-full w-1 self-stretch rounded-full shrink-0"
             style={{ backgroundColor: category.color, minHeight: "1.25rem" }}
           />
-          <span className="text-sm font-mono truncate">{category.name}</span>
+          <span className="text-sm font-mono shrink-0">{category.name}</span>
           {slot.note && (
-            <StickyNote className="h-3 w-3 shrink-0 text-muted-foreground" />
+            <span className="text-xs font-mono text-muted-foreground truncate">
+              · {slot.note}
+            </span>
           )}
         </div>
       ) : (
