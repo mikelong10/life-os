@@ -1,0 +1,65 @@
+import { useMemo } from "react";
+import { PieChart, Pie, Cell } from "recharts";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+import type { Doc } from "../../../convex/_generated/dataModel";
+
+export function GoalPieChart({
+  categories,
+  goals,
+  chartConfig,
+}: {
+  categories: Doc<"categories">[];
+  goals: Map<string, number>;
+  chartConfig: ChartConfig;
+}) {
+  const data = useMemo(() => {
+    return categories
+      .map((cat) => ({
+        name: cat.name,
+        value: goals.get(cat._id) ?? 0,
+        fill: cat.color,
+        id: cat._id,
+      }))
+      .filter((d) => d.value > 0);
+  }, [categories, goals]);
+
+  if (data.length === 0) {
+    return (
+      <div className="flex h-48 items-center justify-center text-sm text-muted-foreground font-mono">
+        Set goals to see distribution
+      </div>
+    );
+  }
+
+  return (
+    <ChartContainer config={chartConfig} className="h-48 w-full">
+      <PieChart>
+        <ChartTooltip
+          content={
+            <ChartTooltipContent formatter={(value) => `${value}h`} />
+          }
+        />
+        <Pie
+          data={data}
+          dataKey="value"
+          nameKey="name"
+          cx="50%"
+          cy="50%"
+          innerRadius={40}
+          outerRadius={70}
+          strokeWidth={2}
+          stroke="var(--background)"
+        >
+          {data.map((entry) => (
+            <Cell key={entry.id} fill={entry.fill} />
+          ))}
+        </Pie>
+      </PieChart>
+    </ChartContainer>
+  );
+}
