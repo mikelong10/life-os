@@ -111,7 +111,7 @@ export function TrendLineChart({
                 </div>
                 <div className="flex flex-col gap-1">
                   {nonZero.map((entry) => {
-                    const cat = catMap.get(entry.dataKey as string);
+                    const cat = catMap.get(entry.dataKey as Doc<"categories">["_id"]);
                     return (
                       <div key={entry.dataKey} className="flex items-center gap-2">
                         <span

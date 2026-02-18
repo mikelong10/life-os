@@ -126,7 +126,8 @@ function ChartTooltipContent({
     indicator?: "line" | "dot" | "dashed"
     nameKey?: string
     labelKey?: string
-    filterPayload?: (item: RechartsPrimitive.TooltipProps<number, string>["payload"] extends (infer U)[] | undefined ? U : never) => boolean
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    filterPayload?: (item: any) => boolean
   }) {
   const { config } = useChart()
 
