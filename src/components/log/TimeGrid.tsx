@@ -130,10 +130,33 @@ export function TimeGrid({ date }: { date: string }) {
     }
   }, [activeSlot, note, updateNote]);
 
-  // Auto-focus grid on mount so keyboard shortcuts work immediately
+  // Track whether we've done the initial auto-select for this date
+  const hasInitializedRef = useRef<string | null>(null);
+
+  // Auto-focus and auto-select earliest unfilled slot when data loads
   useEffect(() => {
-    gridRef.current?.focus();
-  }, []);
+    if (!slots || !categories) return;
+    if (hasInitializedRef.current === date) return;
+    hasInitializedRef.current = date;
+
+    // Find earliest non-categorized slot
+    let firstEmpty = 0;
+    for (let i = 0; i < SLOTS_PER_DAY; i++) {
+      if (!slotMap.has(i)) {
+        firstEmpty = i;
+        break;
+      }
+    }
+
+    setFocusedSlot(firstEmpty);
+    openEditor(firstEmpty);
+
+    // Focus grid after render so keyboard works immediately
+    requestAnimationFrame(() => {
+      gridRef.current?.focus();
+      scrollSlotIntoView(firstEmpty);
+    });
+  }, [slots, categories, date, slotMap, openEditor, scrollSlotIntoView]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
