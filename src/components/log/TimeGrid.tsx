@@ -13,6 +13,7 @@ import { MultiSelectBar } from "./MultiSelectBar";
 import { SLOTS_PER_DAY } from "@/lib/constants";
 import { slotIndexToTimeRange } from "@/lib/slotUtils";
 import { X } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function TimeGrid({ date }: { date: string }) {
   const slots = useQuery(api.timeSlots.getByDate, { date });
@@ -27,7 +28,26 @@ export function TimeGrid({ date }: { date: string }) {
   const [editorSlot, setEditorSlot] = useState<number | null>(null);
   const [note, setNote] = useState("");
 
+  const isMobile = useIsMobile();
   const gridRef = useRef<HTMLDivElement>(null);
+  const bottomPanelRef = useRef<HTMLDivElement>(null);
+  const [bottomPanelHeight, setBottomPanelHeight] = useState(0);
+
+  useEffect(() => {
+    if (!isMobile || editorSlot === null || !bottomPanelRef.current) {
+      setBottomPanelHeight(0);
+      return;
+    }
+    const el = bottomPanelRef.current;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setBottomPanelHeight(entry.contentRect.height);
+      }
+    });
+    observer.observe(el);
+    setBottomPanelHeight(el.offsetHeight);
+    return () => observer.disconnect();
+  }, [isMobile, editorSlot]);
 
   const slotMap = useMemo(() => {
     const map = new Map<number, Doc<"timeSlots">>();
@@ -270,6 +290,58 @@ export function TimeGrid({ date }: { date: string }) {
     );
   }
 
+  const editorContent = editorSlot !== null ? (
+    <>
+      <div className="flex items-center justify-between border-b px-3 py-2">
+        <span className="text-xs font-mono text-muted-foreground">
+          {slotIndexToTimeRange(editorSlot)}
+        </span>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-6 w-6 p-0"
+          onClick={closeEditor}
+        >
+          <X className="h-3.5 w-3.5" />
+        </Button>
+      </div>
+      <div className="p-3 space-y-3">
+        <CategoryPicker
+          onSelect={handleCategorySelect}
+          selectedId={activeCategoryId}
+        />
+        <div className="space-y-1.5">
+          <Label className="text-xs font-mono text-muted-foreground">
+            Note
+          </Label>
+          <Input
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            onBlur={handleNoteBlur}
+            placeholder="What were you doing?"
+            className="h-8 text-sm font-mono"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                (e.target as HTMLInputElement).blur();
+              }
+            }}
+          />
+        </div>
+        {activeCategoryId && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 w-full text-xs text-muted-foreground hover:text-destructive"
+            onClick={handleClearSlot}
+          >
+            <X className="h-3 w-3 mr-1" />
+            Clear slot
+          </Button>
+        )}
+      </div>
+    </>
+  ) : null;
+
   return (
     <>
       <div className="flex h-full">
@@ -282,81 +354,47 @@ export function TimeGrid({ date }: { date: string }) {
           onKeyDown={handleKeyDown}
         >
           <ScrollArea className="h-[calc(100vh-8rem)]">
-            {Array.from({ length: SLOTS_PER_DAY }, (_, i) => {
-              const slot = slotMap.get(i);
-              const category = slot
-                ? categoryMap.get(slot.categoryId) ?? null
-                : undefined;
+            <div style={{ paddingBottom: isMobile && editorSlot !== null ? bottomPanelHeight : 0 }}>
+              {Array.from({ length: SLOTS_PER_DAY }, (_, i) => {
+                const slot = slotMap.get(i);
+                const category = slot
+                  ? categoryMap.get(slot.categoryId) ?? null
+                  : undefined;
 
-              return (
-                <TimeSlotRow
-                  key={i}
-                  slotIndex={i}
-                  slot={slot}
-                  category={category}
-                  isFocused={focusedSlot === i}
-                  isSelected={selectedSlots.has(i)}
-                  onClick={() => handleSlotClick(i)}
-                  onShiftClick={() => handleShiftClick(i)}
-                />
-              );
-            })}
+                return (
+                  <TimeSlotRow
+                    key={i}
+                    slotIndex={i}
+                    slot={slot}
+                    category={category}
+                    isFocused={focusedSlot === i}
+                    isSelected={selectedSlots.has(i)}
+                    onClick={() => handleSlotClick(i)}
+                    onShiftClick={() => handleShiftClick(i)}
+                  />
+                );
+              })}
+            </div>
           </ScrollArea>
         </div>
 
-        {/* Editor side panel */}
-        {editorSlot !== null && (
+        {/* Desktop: Editor side panel */}
+        {!isMobile && editorContent && (
           <div className="w-96 shrink-0 border-l bg-card">
-            <div className="flex items-center justify-between border-b px-3 py-2">
-              <span className="text-xs font-mono text-muted-foreground">
-                {slotIndexToTimeRange(editorSlot)}
-              </span>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-6 w-6 p-0"
-                onClick={closeEditor}
-              >
-                <X className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-            <div className="p-3 space-y-3">
-              <CategoryPicker
-                onSelect={handleCategorySelect}
-                selectedId={activeCategoryId}
-              />
-              <div className="space-y-1.5">
-                <Label className="text-xs font-mono text-muted-foreground">
-                  Note
-                </Label>
-                <Input
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  onBlur={handleNoteBlur}
-                  placeholder="What were you doing?"
-                  className="h-8 text-sm font-mono"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      (e.target as HTMLInputElement).blur();
-                    }
-                  }}
-                />
-              </div>
-              {activeCategoryId && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 w-full text-xs text-muted-foreground hover:text-destructive"
-                  onClick={handleClearSlot}
-                >
-                  <X className="h-3 w-3 mr-1" />
-                  Clear slot
-                </Button>
-              )}
-            </div>
+            {editorContent}
           </div>
         )}
       </div>
+
+      {/* Mobile: Editor bottom panel */}
+      {isMobile && editorContent && (
+        <div
+          ref={bottomPanelRef}
+          className="fixed bottom-16 left-0 right-0 z-40 border-t bg-card shadow-[0_-2px_10px_rgba(0,0,0,0.1)]"
+        >
+          {editorContent}
+        </div>
+      )}
 
       <MultiSelectBar
         date={date}
