@@ -86,3 +86,21 @@ export const seed = mutation({
     }
   },
 });
+
+export const reseed = mutation({
+  handler: async (ctx) => {
+    const all = await ctx.db.query("categories").collect();
+    for (const cat of all) {
+      await ctx.db.delete(cat._id);
+    }
+    for (let i = 0; i < DEFAULT_CATEGORIES.length; i++) {
+      const cat = DEFAULT_CATEGORIES[i];
+      await ctx.db.insert("categories", {
+        name: cat.name,
+        color: cat.color,
+        sortOrder: i,
+        isArchived: false,
+      });
+    }
+  },
+});

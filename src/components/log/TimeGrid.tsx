@@ -283,7 +283,7 @@ export function TimeGrid({ date }: { date: string }) {
 
         {/* Editor side panel */}
         {editorSlot !== null && (
-          <div className="w-72 shrink-0 border-l bg-card">
+          <div className="w-80 shrink-0 border-l bg-card">
             <div className="flex items-center justify-between border-b px-3 py-2">
               <span className="text-xs font-mono text-muted-foreground">
                 {slotIndexToTimeRange(editorSlot)}

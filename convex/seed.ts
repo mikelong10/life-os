@@ -19,6 +19,7 @@ export const DEFAULT_CATEGORIES = [
   { name: "Deep Work", color: CATEGORY_PALETTE[0] },
   { name: "Meetings", color: CATEGORY_PALETTE[5] },
   { name: "Admin/Email", color: CATEGORY_PALETTE[9] },
+  { name: "Relationship", color: CATEGORY_PALETTE[11] },
   { name: "Exercise", color: CATEGORY_PALETTE[1] },
   { name: "Meals/Cooking", color: CATEGORY_PALETTE[6] },
   { name: "Commute", color: CATEGORY_PALETTE[4] },
@@ -27,5 +28,4 @@ export const DEFAULT_CATEGORIES = [
   { name: "Reading", color: CATEGORY_PALETTE[10] },
   { name: "Personal Development", color: CATEGORY_PALETTE[2] },
   { name: "Errands", color: CATEGORY_PALETTE[8] },
-  { name: "Relationship", color: CATEGORY_PALETTE[11] },
 ] as const;
