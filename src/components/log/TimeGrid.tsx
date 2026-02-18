@@ -356,7 +356,7 @@ export function TimeGrid({ date }: { date: string }) {
 
   return (
     <>
-      <div className="flex h-full">
+      <div className="flex h-full overflow-hidden">
         {/* Grid */}
         <div
           ref={gridRef}
@@ -365,7 +365,7 @@ export function TimeGrid({ date }: { date: string }) {
           className="flex-1 min-w-0 outline-none"
           onKeyDown={handleKeyDown}
         >
-          <ScrollArea className="h-[calc(100vh-8rem)]">
+          <ScrollArea className="h-[calc(100vh-8rem)] [&_[data-slot=scroll-area-viewport]>div]:block!">
             <div style={{ paddingBottom: isMobile && editorSlot !== null ? bottomPanelHeight : 0 }}>
               {Array.from({ length: SLOTS_PER_DAY }, (_, i) => {
                 const slot = slotMap.get(i);
