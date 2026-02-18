@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useMemo } from "react";
+import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
@@ -70,6 +70,8 @@ export function TimeGrid({ date }: { date: string }) {
 
   const closeEditor = useCallback(() => {
     setEditorSlot(null);
+    // Re-focus grid so keyboard shortcuts keep working
+    gridRef.current?.focus();
   }, []);
 
   const handleSlotClick = useCallback(
@@ -128,12 +130,31 @@ export function TimeGrid({ date }: { date: string }) {
     }
   }, [activeSlot, note, updateNote]);
 
+  // Auto-focus grid on mount so keyboard shortcuts work immediately
+  useEffect(() => {
+    gridRef.current?.focus();
+  }, []);
+
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (editorSlot !== null) {
+      // If a text input is focused, don't intercept keys
+      const tag = (e.target as HTMLElement).tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") {
         if (e.key === "Escape") {
+          (e.target as HTMLElement).blur();
           e.preventDefault();
+        }
+        return;
+      }
+
+      // Escape always closes editor or clears selection
+      if (e.key === "Escape") {
+        e.preventDefault();
+        if (editorSlot !== null) {
           closeEditor();
+        } else if (selectedSlots.size > 0) {
+          setSelectedSlots(new Set());
+          setAnchorSlot(null);
         }
         return;
       }
@@ -151,6 +172,8 @@ export function TimeGrid({ date }: { date: string }) {
             const sel = new Set<number>();
             for (let i = start; i <= end; i++) sel.add(i);
             setSelectedSlots(sel);
+          } else {
+            openEditor(next);
           }
           break;
         }
@@ -166,6 +189,8 @@ export function TimeGrid({ date }: { date: string }) {
             const sel = new Set<number>();
             for (let i = start; i <= end; i++) sel.add(i);
             setSelectedSlots(sel);
+          } else {
+            openEditor(next);
           }
           break;
         }
@@ -173,14 +198,6 @@ export function TimeGrid({ date }: { date: string }) {
         case " ": {
           e.preventDefault();
           openEditor(focusedSlot);
-          break;
-        }
-        case "Escape": {
-          e.preventDefault();
-          if (selectedSlots.size > 0) {
-            setSelectedSlots(new Set());
-            setAnchorSlot(null);
-          }
           break;
         }
         default: {
