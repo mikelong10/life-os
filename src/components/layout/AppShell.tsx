@@ -48,7 +48,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <Sidebar collapsible="icon">
         <SidebarHeader className="p-4">
           <span className="font-mono text-sm font-bold text-primary group-data-[collapsible=icon]:hidden">
-            memphis
+            life os
           </span>
         </SidebarHeader>
         <SidebarContent>
