@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev:frontend": "vite",
+    "dev:backend": "bunx convex dev",
     "build": "tsc -b && vite build",
     "preview": "vite preview"
   },

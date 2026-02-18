@@ -4,3 +4,4 @@ dist
 .context
 *.tsbuildinfo
 .vercel
+bun.lockb
