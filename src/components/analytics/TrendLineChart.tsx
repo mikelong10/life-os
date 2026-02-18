@@ -9,10 +9,10 @@ import {
 import {
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
 import type { Doc } from "../../../convex/_generated/dataModel";
+import { format, parse } from "date-fns";
 
 export function TrendLineChart({
   slots,
@@ -91,9 +91,46 @@ export function TrendLineChart({
           }}
         />
         <ChartTooltip
-          content={
-            <ChartTooltipContent formatter={(value) => `${value}h`} />
-          }
+          content={({ active, payload, label }) => {
+            if (!active || !payload?.length) return null;
+            const nonZero = payload.filter((p) => p.value !== 0);
+            if (!nonZero.length) return null;
+            const catMap = new Map(categories.map((c) => [c._id, c]));
+            let formattedDate = String(label);
+            try {
+              if (groupBy === "month") {
+                formattedDate = format(parse(String(label), "yyyy-MM", new Date()), "MMM yyyy");
+              } else {
+                formattedDate = format(parse(String(label), "yyyy-MM-dd", new Date()), "MMM d, yyyy");
+              }
+            } catch { /* use raw label as fallback */ }
+            return (
+              <div className="rounded-md border bg-popover px-3 py-2 shadow-md">
+                <div className="mb-1 text-sm font-mono font-semibold text-popover-foreground">
+                  {formattedDate}
+                </div>
+                <div className="flex flex-col gap-1">
+                  {nonZero.map((entry) => {
+                    const cat = catMap.get(entry.dataKey as string);
+                    return (
+                      <div key={entry.dataKey} className="flex items-center gap-2">
+                        <span
+                          className="h-3 w-3 shrink-0 rounded-sm"
+                          style={{ backgroundColor: cat?.color ?? (entry.color as string) }}
+                        />
+                        <span className="text-sm font-mono text-popover-foreground">
+                          {cat?.name ?? entry.name}
+                        </span>
+                        <span className="text-sm font-mono font-semibold text-popover-foreground">
+                          {entry.value}h
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          }}
         />
         {categories.map((cat) => (
           <Line
