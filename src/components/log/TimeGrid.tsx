@@ -75,8 +75,18 @@ export function TimeGrid({ date }: { date: string }) {
   const scrollSlotIntoView = useCallback((index: number) => {
     const row = gridRef.current?.querySelector(
       `[data-slot-index="${index}"]`
-    );
-    row?.scrollIntoView({ block: "nearest" });
+    ) as HTMLElement | null;
+    const viewport = gridRef.current?.querySelector(
+      '[data-slot="scroll-area-viewport"]'
+    ) as HTMLElement | null;
+    if (!row || !viewport) return;
+
+    const rowTop = row.offsetTop;
+    const rowHeight = row.offsetHeight;
+    const viewportHeight = viewport.clientHeight;
+    // Position the slot in the upper quarter of the viewport so it stays
+    // visible above the mobile bottom panel (and reads naturally on desktop)
+    viewport.scrollTop = rowTop - viewportHeight / 4 + rowHeight / 2;
   }, []);
 
   const openEditor = useCallback(
