@@ -10,7 +10,7 @@ import {
 import { WeeklyGoalSliders } from "@/components/planning/WeeklyGoalSliders";
 import { GoalPieChart } from "@/components/planning/GoalPieChart";
 import { buildChartConfig } from "@/lib/chartUtils";
-import { todayString, getWeekStart, fromDateString, toDateString } from "@/lib/dateUtils";
+import { todayString, getWeekStart, getWeekEnd, fromDateString, toDateString } from "@/lib/dateUtils";
 import {
   format,
   addWeeks,
@@ -37,11 +37,14 @@ function PlanningPage() {
   const { label, maxHours } = useMemo(() => {
     const d = fromDateString(anchor);
     switch (period) {
-      case "week":
+      case "week": {
+        const ws = fromDateString(weekStart);
+        const we = fromDateString(getWeekEnd(anchor));
         return {
-          label: `Week of ${format(fromDateString(weekStart), "MMM d, yyyy")}`,
+          label: `${format(ws, "MMM d")} – ${format(we, "MMM d, yyyy")}`,
           maxHours: 168,
         };
+      }
       case "month":
         return {
           label: format(d, "MMMM yyyy"),

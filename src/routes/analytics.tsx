@@ -50,12 +50,15 @@ function AnalyticsPage() {
           endDate: anchor,
           label: format(d, "MMM d, yyyy"),
         };
-      case "week":
+      case "week": {
+        const ws = getWeekStart(anchor);
+        const we = getWeekEnd(anchor);
         return {
-          startDate: getWeekStart(anchor),
-          endDate: getWeekEnd(anchor),
-          label: `Week of ${format(fromDateString(getWeekStart(anchor)), "MMM d")}`,
+          startDate: ws,
+          endDate: we,
+          label: `${format(fromDateString(ws), "MMM d")} – ${format(fromDateString(we), "MMM d, yyyy")}`,
         };
+      }
       case "month":
         return {
           startDate: toDateString(startOfMonth(d)),
@@ -148,30 +151,51 @@ function AnalyticsPage() {
           <p className="text-sm text-muted-foreground font-mono">Loading...</p>
         </div>
       ) : (
-        <div className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-lg border bg-card p-4">
-            <h3 className="mb-4 text-sm font-mono font-medium text-muted-foreground">
-              Time Breakdown
-            </h3>
-            <CategoryPieChart
-              summary={summary as { categoryId: string; totalHours: number }[]}
-              categories={categories as Doc<"categories">[]}
-              chartConfig={chartConfig}
-            />
+        <>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div className="rounded-lg border bg-card p-4">
+              <h3 className="mb-4 text-sm font-mono font-medium text-muted-foreground">
+                Time Breakdown
+              </h3>
+              <CategoryPieChart
+                summary={summary as { categoryId: string; totalHours: number }[]}
+                categories={categories as Doc<"categories">[]}
+                chartConfig={chartConfig}
+              />
+            </div>
+
+            <div className="rounded-lg border bg-card p-4">
+              <h3 className="mb-4 text-sm font-mono font-medium text-muted-foreground">
+                Trends
+              </h3>
+              <TrendLineChart
+                slots={slots as Doc<"timeSlots">[]}
+                categories={categories as Doc<"categories">[]}
+                chartConfig={chartConfig}
+                groupBy={trendGroupBy}
+              />
+            </div>
           </div>
 
           <div className="rounded-lg border bg-card p-4">
-            <h3 className="mb-4 text-sm font-mono font-medium text-muted-foreground">
-              Trends
+            <h3 className="mb-3 text-sm font-mono font-medium text-muted-foreground">
+              Legend
             </h3>
-            <TrendLineChart
-              slots={slots as Doc<"timeSlots">[]}
-              categories={categories as Doc<"categories">[]}
-              chartConfig={chartConfig}
-              groupBy={trendGroupBy}
-            />
+            <div className="flex flex-wrap gap-x-4 gap-y-2">
+              {(categories as Doc<"categories">[]).map((cat) => (
+                <div key={cat._id} className="flex items-center gap-1.5">
+                  <span
+                    className="h-3 w-3 shrink-0 rounded-sm"
+                    style={{ backgroundColor: cat.color }}
+                  />
+                  <span className="text-xs font-mono text-muted-foreground">
+                    {cat.name}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

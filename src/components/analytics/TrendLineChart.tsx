@@ -10,8 +10,6 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
   type ChartConfig,
 } from "@/components/ui/chart";
 import type { Doc } from "../../../convex/_generated/dataModel";
@@ -97,7 +95,6 @@ export function TrendLineChart({
             <ChartTooltipContent formatter={(value) => `${value}h`} />
           }
         />
-        <ChartLegend content={<ChartLegendContent />} />
         {categories.map((cat) => (
           <Line
             key={cat._id}
