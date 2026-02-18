@@ -2,21 +2,34 @@ import { useState, useCallback, useRef, useMemo } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
+import type { Id } from "../../../convex/_generated/dataModel";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Popover,
+  PopoverAnchor,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { CategoryPicker } from "@/components/categories/CategoryPicker";
 import { TimeSlotRow } from "./TimeSlotRow";
-import { SlotEditor } from "./SlotEditor";
 import { MultiSelectBar } from "./MultiSelectBar";
 import { SLOTS_PER_DAY } from "@/lib/constants";
+import { X } from "lucide-react";
 
 export function TimeGrid({ date }: { date: string }) {
   const slots = useQuery(api.timeSlots.getByDate, { date });
   const categories = useQuery(api.categories.list);
   const upsertSlot = useMutation(api.timeSlots.upsert);
+  const removeSlot = useMutation(api.timeSlots.remove);
+  const updateNote = useMutation(api.timeSlots.updateNote);
 
   const [focusedSlot, setFocusedSlot] = useState<number>(0);
   const [selectedSlots, setSelectedSlots] = useState<Set<number>>(new Set());
   const [anchorSlot, setAnchorSlot] = useState<number | null>(null);
   const [editorSlot, setEditorSlot] = useState<number | null>(null);
+  const [note, setNote] = useState("");
 
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -40,6 +53,10 @@ export function TimeGrid({ date }: { date: string }) {
     return map;
   }, [categories]);
 
+  // Get the active slot data for the editor
+  const activeSlot = editorSlot !== null ? slotMap.get(editorSlot) : undefined;
+  const activeCategoryId = activeSlot?.categoryId;
+
   const scrollSlotIntoView = useCallback((index: number) => {
     const row = gridRef.current?.querySelector(
       `[data-slot-index="${index}"]`
@@ -47,12 +64,28 @@ export function TimeGrid({ date }: { date: string }) {
     row?.scrollIntoView({ block: "nearest" });
   }, []);
 
-  const handleSlotClick = useCallback((index: number) => {
-    setSelectedSlots(new Set());
-    setAnchorSlot(index);
-    setFocusedSlot(index);
-    setEditorSlot(index);
+  const openEditor = useCallback(
+    (index: number) => {
+      const slot = slotMap.get(index);
+      setNote(slot?.note ?? "");
+      setEditorSlot(index);
+    },
+    [slotMap]
+  );
+
+  const closeEditor = useCallback(() => {
+    setEditorSlot(null);
   }, []);
+
+  const handleSlotClick = useCallback(
+    (index: number) => {
+      setSelectedSlots(new Set());
+      setAnchorSlot(index);
+      setFocusedSlot(index);
+      openEditor(index);
+    },
+    [openEditor]
+  );
 
   const handleShiftClick = useCallback(
     (index: number) => {
@@ -73,9 +106,36 @@ export function TimeGrid({ date }: { date: string }) {
     [anchorSlot]
   );
 
+  const handleCategorySelect = useCallback(
+    async (categoryId: Id<"categories">) => {
+      if (editorSlot === null) return;
+      await upsertSlot({
+        date,
+        slotIndex: editorSlot,
+        categoryId,
+        note: note || undefined,
+      });
+      closeEditor();
+    },
+    [editorSlot, date, note, upsertSlot, closeEditor]
+  );
+
+  const handleClearSlot = useCallback(async () => {
+    if (editorSlot === null) return;
+    await removeSlot({ date, slotIndex: editorSlot });
+    closeEditor();
+  }, [editorSlot, date, removeSlot, closeEditor]);
+
+  const handleNoteBlur = useCallback(async () => {
+    if (!activeSlot) return;
+    if (note !== (activeSlot.note ?? "")) {
+      await updateNote({ id: activeSlot._id, note });
+    }
+  }, [activeSlot, note, updateNote]);
+
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      // Don't handle keys if editor popover is open
+      // Don't handle grid keys if editor popover is open
       if (editorSlot !== null) return;
 
       switch (e.key) {
@@ -112,7 +172,7 @@ export function TimeGrid({ date }: { date: string }) {
         case "Enter":
         case " ": {
           e.preventDefault();
-          setEditorSlot(focusedSlot);
+          openEditor(focusedSlot);
           break;
         }
         case "Escape": {
@@ -131,7 +191,6 @@ export function TimeGrid({ date }: { date: string }) {
             const cat = categories[num - 1];
             if (cat) {
               if (selectedSlots.size > 0) {
-                // Bulk assign to selected slots
                 const slots = Array.from(selectedSlots);
                 for (const si of slots) {
                   upsertSlot({ date, slotIndex: si, categoryId: cat._id });
@@ -139,7 +198,6 @@ export function TimeGrid({ date }: { date: string }) {
                 setSelectedSlots(new Set());
                 setAnchorSlot(null);
               } else {
-                // Assign to focused slot
                 upsertSlot({
                   date,
                   slotIndex: focusedSlot,
@@ -160,6 +218,7 @@ export function TimeGrid({ date }: { date: string }) {
       date,
       upsertSlot,
       scrollSlotIntoView,
+      openEditor,
     ]
   );
 
@@ -179,52 +238,95 @@ export function TimeGrid({ date }: { date: string }) {
         role="grid"
         className="outline-none"
         onKeyDown={handleKeyDown}
-        onFocus={() => {
-          // Ensure focus ring is visible
-        }}
       >
-        <ScrollArea className="h-[calc(100vh-8rem)]">
-          {Array.from({ length: SLOTS_PER_DAY }, (_, i) => {
-            const slot = slotMap.get(i);
-            const category = slot
-              ? categoryMap.get(slot.categoryId) ?? null
-              : undefined;
+        <Popover
+          open={editorSlot !== null}
+          onOpenChange={(open) => {
+            if (!open) closeEditor();
+          }}
+        >
+          <ScrollArea className="h-[calc(100vh-8rem)]">
+            {Array.from({ length: SLOTS_PER_DAY }, (_, i) => {
+              const slot = slotMap.get(i);
+              const category = slot
+                ? categoryMap.get(slot.categoryId) ?? null
+                : undefined;
 
-            const row = (
-              <TimeSlotRow
-                key={i}
-                slotIndex={i}
-                slot={slot}
-                category={category}
-                isFocused={focusedSlot === i}
-                isSelected={selectedSlots.has(i)}
-                onClick={() => handleSlotClick(i)}
-                onShiftClick={() => handleShiftClick(i)}
-              />
-            );
-
-            if (editorSlot === i) {
-              return (
-                <SlotEditor
-                  key={`editor-${i}`}
-                  date={date}
+              const row = (
+                <TimeSlotRow
                   slotIndex={i}
-                  currentCategoryId={slot?.categoryId}
-                  currentNote={slot?.note}
-                  slotId={slot?._id}
-                  open={true}
-                  onOpenChange={(open) => {
-                    if (!open) setEditorSlot(null);
-                  }}
-                >
-                  {row}
-                </SlotEditor>
+                  slot={slot}
+                  category={category}
+                  isFocused={focusedSlot === i}
+                  isSelected={selectedSlots.has(i)}
+                  onClick={() => handleSlotClick(i)}
+                  onShiftClick={() => handleShiftClick(i)}
+                />
               );
-            }
 
-            return row;
-          })}
-        </ScrollArea>
+              // Anchor the popover to the row being edited
+              if (editorSlot === i) {
+                return (
+                  <PopoverAnchor key={i} asChild>
+                    {row}
+                  </PopoverAnchor>
+                );
+              }
+
+              return <div key={i}>{row}</div>;
+            })}
+          </ScrollArea>
+
+          <PopoverContent
+            className="w-80 p-3"
+            side="right"
+            sideOffset={8}
+            align="start"
+            collisionPadding={16}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") closeEditor();
+            }}
+            onOpenAutoFocus={(e) => {
+              // Don't steal focus from the grid
+              e.preventDefault();
+            }}
+          >
+            <div className="space-y-3">
+              <CategoryPicker
+                onSelect={handleCategorySelect}
+                selectedId={activeCategoryId}
+              />
+              <div className="space-y-1.5">
+                <Label className="text-xs font-mono text-muted-foreground">
+                  Note
+                </Label>
+                <Input
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  onBlur={handleNoteBlur}
+                  placeholder="What were you doing?"
+                  className="h-8 text-sm font-mono"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      (e.target as HTMLInputElement).blur();
+                    }
+                  }}
+                />
+              </div>
+              {activeCategoryId && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-full text-xs text-muted-foreground hover:text-destructive"
+                  onClick={handleClearSlot}
+                >
+                  <X className="h-3 w-3 mr-1" />
+                  Clear slot
+                </Button>
+              )}
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
       <MultiSelectBar
         date={date}
