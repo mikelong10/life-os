@@ -4,11 +4,6 @@ import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Popover,
-  PopoverAnchor,
-  PopoverContent,
-} from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -16,6 +11,7 @@ import { CategoryPicker } from "@/components/categories/CategoryPicker";
 import { TimeSlotRow } from "./TimeSlotRow";
 import { MultiSelectBar } from "./MultiSelectBar";
 import { SLOTS_PER_DAY } from "@/lib/constants";
+import { slotIndexToTimeRange } from "@/lib/slotUtils";
 import { X } from "lucide-react";
 
 export function TimeGrid({ date }: { date: string }) {
@@ -53,7 +49,6 @@ export function TimeGrid({ date }: { date: string }) {
     return map;
   }, [categories]);
 
-  // Get the active slot data for the editor
   const activeSlot = editorSlot !== null ? slotMap.get(editorSlot) : undefined;
   const activeCategoryId = activeSlot?.categoryId;
 
@@ -135,8 +130,13 @@ export function TimeGrid({ date }: { date: string }) {
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      // Don't handle grid keys if editor popover is open
-      if (editorSlot !== null) return;
+      if (editorSlot !== null) {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          closeEditor();
+        }
+        return;
+      }
 
       switch (e.key) {
         case "ArrowUp": {
@@ -184,7 +184,6 @@ export function TimeGrid({ date }: { date: string }) {
           break;
         }
         default: {
-          // Number keys 1-9 for quick category assignment
           const num = parseInt(e.key);
           if (num >= 1 && num <= 9 && categories) {
             e.preventDefault();
@@ -219,6 +218,7 @@ export function TimeGrid({ date }: { date: string }) {
       upsertSlot,
       scrollSlotIntoView,
       openEditor,
+      closeEditor,
     ]
   );
 
@@ -232,18 +232,14 @@ export function TimeGrid({ date }: { date: string }) {
 
   return (
     <>
-      <div
-        ref={gridRef}
-        tabIndex={0}
-        role="grid"
-        className="outline-none"
-        onKeyDown={handleKeyDown}
-      >
-        <Popover
-          open={editorSlot !== null}
-          onOpenChange={(open) => {
-            if (!open) closeEditor();
-          }}
+      <div className="flex h-full">
+        {/* Grid */}
+        <div
+          ref={gridRef}
+          tabIndex={0}
+          role="grid"
+          className="flex-1 min-w-0 outline-none"
+          onKeyDown={handleKeyDown}
         >
           <ScrollArea className="h-[calc(100vh-8rem)]">
             {Array.from({ length: SLOTS_PER_DAY }, (_, i) => {
@@ -252,8 +248,9 @@ export function TimeGrid({ date }: { date: string }) {
                 ? categoryMap.get(slot.categoryId) ?? null
                 : undefined;
 
-              const row = (
+              return (
                 <TimeSlotRow
+                  key={i}
                   slotIndex={i}
                   slot={slot}
                   category={category}
@@ -263,35 +260,27 @@ export function TimeGrid({ date }: { date: string }) {
                   onShiftClick={() => handleShiftClick(i)}
                 />
               );
-
-              // Anchor the popover to the row being edited
-              if (editorSlot === i) {
-                return (
-                  <PopoverAnchor key={i} asChild>
-                    {row}
-                  </PopoverAnchor>
-                );
-              }
-
-              return <div key={i}>{row}</div>;
             })}
           </ScrollArea>
+        </div>
 
-          <PopoverContent
-            className="w-80 p-3"
-            side="right"
-            sideOffset={8}
-            align="start"
-            collisionPadding={16}
-            onKeyDown={(e) => {
-              if (e.key === "Escape") closeEditor();
-            }}
-            onOpenAutoFocus={(e) => {
-              // Don't steal focus from the grid
-              e.preventDefault();
-            }}
-          >
-            <div className="space-y-3">
+        {/* Editor side panel */}
+        {editorSlot !== null && (
+          <div className="w-72 shrink-0 border-l bg-card">
+            <div className="flex items-center justify-between border-b px-3 py-2">
+              <span className="text-xs font-mono text-muted-foreground">
+                {slotIndexToTimeRange(editorSlot)}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 p-0"
+                onClick={closeEditor}
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+            <div className="p-3 space-y-3">
               <CategoryPicker
                 onSelect={handleCategorySelect}
                 selectedId={activeCategoryId}
@@ -325,9 +314,10 @@ export function TimeGrid({ date }: { date: string }) {
                 </Button>
               )}
             </div>
-          </PopoverContent>
-        </Popover>
+          </div>
+        )}
       </div>
+
       <MultiSelectBar
         date={date}
         selectedSlots={selectedSlots}
