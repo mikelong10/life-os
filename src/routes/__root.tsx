@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { ConvexProvider, ConvexReactClient, useMutation, useQuery } from "convex/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { AppShell } from "@/components/layout/AppShell";
 import { api } from "../../convex/_generated/api";
 
@@ -23,12 +24,14 @@ function SeedCategories() {
 function RootComponent() {
   return (
     <ConvexProvider client={convex}>
-      <TooltipProvider>
-        <SeedCategories />
-        <AppShell>
-          <Outlet />
-        </AppShell>
-      </TooltipProvider>
+      <ThemeProvider defaultTheme="system">
+        <TooltipProvider>
+          <SeedCategories />
+          <AppShell>
+            <Outlet />
+          </AppShell>
+        </TooltipProvider>
+      </ThemeProvider>
     </ConvexProvider>
   );
 }

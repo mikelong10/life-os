@@ -21,6 +21,7 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { MobileNav } from "./MobileNav";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const NAV_ITEMS = [
@@ -37,6 +38,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   if (isMobile) {
     return (
       <div className="flex min-h-svh flex-col bg-background">
+        <header className="flex h-10 shrink-0 items-center justify-between border-b px-4">
+          <span className="font-mono text-sm font-bold text-primary">
+            life os
+          </span>
+          <ThemeToggle />
+        </header>
         <main className="flex-1 pb-16">{children}</main>
         <MobileNav currentPath={currentPath} />
       </div>
@@ -92,8 +99,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="flex h-10 shrink-0 items-center gap-2 border-b px-4">
+        <header className="flex h-10 shrink-0 items-center justify-between border-b px-4">
           <SidebarTrigger className="-ml-1" />
+          <ThemeToggle />
         </header>
         <main className="flex-1">{children}</main>
       </SidebarInset>
