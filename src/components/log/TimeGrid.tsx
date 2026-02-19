@@ -425,7 +425,7 @@ export function TimeGrid({ date }: { date: string }) {
                     slotIndex={i}
                     slot={slot}
                     category={category}
-                    isFocused={focusedSlot === i}
+                    isFocused={focusedSlot === i && editorSlot !== null}
                     isSelected={selectedSlots.has(i)}
                     onClick={() => handleSlotClick(i)}
                     onShiftClick={() => handleShiftClick(i)}
