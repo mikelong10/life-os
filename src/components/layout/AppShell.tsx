@@ -92,7 +92,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </span>
           <ThemeToggle />
         </header>
-        <main className="flex-1 pb-16">{children}</main>
+        <main className="flex-1 pb-[calc(4rem+env(safe-area-inset-bottom,0px))]">
+          {children}
+        </main>
         <MobileNav currentPath={currentPath} />
       </div>
     );

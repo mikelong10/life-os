@@ -415,7 +415,7 @@ export function TimeGrid({ date }: { date: string }) {
       {isMobile && editorContent && (
         <div
           ref={bottomPanelRef}
-          className="fixed bottom-16 left-0 right-0 z-40 border-t bg-card shadow-[0_-2px_10px_rgba(0,0,0,0.1)]"
+          className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] left-0 right-0 z-40 border-t bg-card shadow-[0_-2px_10px_rgba(0,0,0,0.1)]"
         >
           {editorContent}
         </div>

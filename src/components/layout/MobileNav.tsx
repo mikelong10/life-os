@@ -11,7 +11,8 @@ const NAV_ITEMS = [
 
 export function MobileNav({ currentPath }: { currentPath: string }) {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t bg-card">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-card pb-[env(safe-area-inset-bottom,0px)]">
+      <div className="flex h-16 items-center justify-around">
       {NAV_ITEMS.map((item) => {
         const isActive = currentPath === item.to;
         return (
@@ -30,6 +31,7 @@ export function MobileNav({ currentPath }: { currentPath: string }) {
           </Link>
         );
       })}
+      </div>
     </nav>
   );
 }
