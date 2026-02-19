@@ -134,6 +134,31 @@ export const bulkAssign = mutation({
   },
 });
 
+export const bulkRemove = mutation({
+  args: {
+    date: v.string(),
+    slotIndexes: v.array(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    for (const slotIndex of args.slotIndexes) {
+      const existing = await ctx.db
+        .query("timeSlots")
+        .withIndex("by_user_date_slot", (q) =>
+          q
+            .eq("userId", userId)
+            .eq("date", args.date)
+            .eq("slotIndex", slotIndex),
+        )
+        .unique();
+
+      if (existing) {
+        await ctx.db.delete(existing._id);
+      }
+    }
+  },
+});
+
 export const remove = mutation({
   args: { date: v.string(), slotIndex: v.number() },
   handler: async (ctx, args) => {
