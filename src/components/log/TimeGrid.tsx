@@ -142,9 +142,12 @@ export function TimeGrid({ date }: { date: string }) {
         categoryId,
         note: note || undefined,
       });
-      closeEditor();
+      const nextSlot = Math.min(editorSlot + 1, SLOTS_PER_DAY - 1);
+      setFocusedSlot(nextSlot);
+      openEditor(nextSlot);
+      scrollSlotIntoView(nextSlot);
     },
-    [editorSlot, date, note, upsertSlot, closeEditor]
+    [editorSlot, date, note, upsertSlot, openEditor, scrollSlotIntoView]
   );
 
   const handleClearSlot = useCallback(async () => {
