@@ -10,7 +10,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CATEGORY_PALETTE } from "@/lib/constants";
+import { CATEGORY_PALETTE, getNextCategoryColor } from "@/lib/constants";
 import { Trash2, Plus, GripVertical, ChevronUp, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +22,7 @@ export function CategoryManager() {
   const archiveCategory = useMutation(api.categories.archive);
   const reorderCategories = useMutation(api.categories.reorder);
   const [newName, setNewName] = useState("");
+  const [newColorOverride, setNewColorOverride] = useState<string | null>(null);
 
   // Drag state
   const [dragIndex, setDragIndex] = useState<number | null>(null);
@@ -36,19 +37,20 @@ export function CategoryManager() {
     );
   }
 
-  const usedColors = new Set(allCategories.map((c: { color: string }) => c.color));
-  const nextColor =
-    CATEGORY_PALETTE.find((c) => !usedColors.has(c)) ?? CATEGORY_PALETTE[0];
+  const usedColors = allCategories.map((c: { color: string }) => c.color);
+  const autoColor = getNextCategoryColor(usedColors);
+  const newColor = newColorOverride ?? autoColor;
 
   const handleAdd = async () => {
     const trimmed = newName.trim();
     if (!trimmed) return;
     await createCategory({
       name: trimmed,
-      color: nextColor,
+      color: newColor,
       sortOrder: categories.length,
     });
     setNewName("");
+    setNewColorOverride(null);
   };
 
   const handleRename = async (id: Id<"categories">, name: string) => {
@@ -181,10 +183,7 @@ export function CategoryManager() {
       </div>
       <Separator />
       <div className="flex items-center gap-2">
-        <span
-          className="h-4 w-4 shrink-0 rounded-sm"
-          style={{ backgroundColor: nextColor }}
-        />
+        <ColorPicker color={newColor} onChange={setNewColorOverride} />
         <Input
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
