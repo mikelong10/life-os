@@ -275,6 +275,10 @@ export function TimeGrid({ date }: { date: string }) {
                   slotIndex: focusedSlot,
                   categoryId: cat._id,
                 });
+                const nextSlot = Math.min(focusedSlot + 1, SLOTS_PER_DAY - 1);
+                setFocusedSlot(nextSlot);
+                openEditor(nextSlot);
+                scrollSlotIntoView(nextSlot);
               }
             }
           }
