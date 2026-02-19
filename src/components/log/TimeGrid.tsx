@@ -283,9 +283,9 @@ export function TimeGrid({ date }: { date: string }) {
         }
         default: {
           const num = parseInt(e.key);
-          if (num >= 1 && num <= 9 && categories) {
+          if (num >= 0 && num <= 9 && categories) {
             e.preventDefault();
-            const cat = categories[num - 1];
+            const cat = categories[num];
             if (cat) {
               if (selectedSlots.size > 0) {
                 const slots = Array.from(selectedSlots);

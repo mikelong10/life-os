@@ -145,9 +145,9 @@ export function CategoryManager() {
                 }
               }}
             />
-            {index < 9 && (
+            {index < 10 && (
               <kbd className="shrink-0 rounded border bg-muted px-1 text-xs text-muted-foreground font-mono tabular-nums">
-                {index + 1}
+                {index}
               </kbd>
             )}
             <div className="flex shrink-0">

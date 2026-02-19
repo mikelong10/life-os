@@ -35,9 +35,9 @@ export function CategoryPicker({
             style={{ backgroundColor: cat.color }}
           />
           <span className="truncate">{cat.name}</span>
-          {index < 9 && (
+          {index < 10 && (
             <kbd className="ml-auto shrink-0 rounded border bg-muted px-1 text-xs text-muted-foreground font-mono">
-              {index + 1}
+              {index}
             </kbd>
           )}
         </button>
