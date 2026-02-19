@@ -14,6 +14,8 @@ import { SLOTS_PER_DAY } from "@/lib/constants";
 import { slotIndexToTimeRange } from "@/lib/slotUtils";
 import { X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useDragSelect } from "@/hooks/use-drag-select";
+import { cn } from "@/lib/utils";
 
 export function TimeGrid({ date }: { date: string }) {
   const slots = useQuery(api.timeSlots.getByDate, { date });
@@ -104,14 +106,37 @@ export function TimeGrid({ date }: { date: string }) {
     gridRef.current?.focus();
   }, []);
 
+  const handleDragSelectionChange = useCallback(
+    (newSelection: Set<number>, anchor: number) => {
+      setSelectedSlots(newSelection);
+      setAnchorSlot(anchor);
+      if (newSelection.size > 1) {
+        setEditorSlot(null);
+      }
+    },
+    []
+  );
+
+  const handleDragEnd = useCallback(() => {}, []);
+
+  const { isDragging, handlePointerDown, justFinishedDragRef } = useDragSelect(
+    gridRef,
+    {
+      focusedSlot,
+      onSelectionChange: handleDragSelectionChange,
+      onDragEnd: handleDragEnd,
+    }
+  );
+
   const handleSlotClick = useCallback(
     (index: number) => {
+      if (justFinishedDragRef.current) return;
       setSelectedSlots(new Set());
       setAnchorSlot(index);
       setFocusedSlot(index);
       openEditor(index);
     },
-    [openEditor]
+    [openEditor, justFinishedDragRef]
   );
 
   const handleShiftClick = useCallback(
@@ -275,6 +300,10 @@ export function TimeGrid({ date }: { date: string }) {
                   slotIndex: focusedSlot,
                   categoryId: cat._id,
                 });
+                const nextSlot = Math.min(focusedSlot + 1, SLOTS_PER_DAY - 1);
+                setFocusedSlot(nextSlot);
+                openEditor(nextSlot);
+                scrollSlotIntoView(nextSlot);
               }
             }
           }
@@ -375,8 +404,12 @@ export function TimeGrid({ date }: { date: string }) {
           ref={gridRef}
           tabIndex={0}
           role="grid"
-          className="flex flex-col flex-1 min-w-0 min-h-0 outline-none"
+          className={cn(
+            "flex flex-col flex-1 min-w-0 min-h-0 outline-none",
+            isDragging && "cursor-grabbing select-none"
+          )}
           onKeyDown={handleKeyDown}
+          onPointerDown={handlePointerDown}
         >
           <ScrollArea className="flex-1 min-h-0 [&_[data-slot=scroll-area-viewport]>div]:block!">
             <div style={{ paddingBottom: isMobile && editorSlot !== null ? bottomPanelHeight : 0 }}>
