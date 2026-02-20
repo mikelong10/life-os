@@ -11,6 +11,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { CATEGORY_PALETTE, getNextCategoryColor } from "@/lib/constants";
+import { getCategoryShortcutLabel } from "@/lib/categoryShortcuts";
 import { Trash2, Plus, GripVertical, ChevronUp, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -145,11 +146,14 @@ export function CategoryManager() {
                 }
               }}
             />
-            {index < 10 && (
-              <kbd className="shrink-0 rounded border bg-muted px-1 text-xs text-muted-foreground font-mono tabular-nums">
-                {index}
-              </kbd>
-            )}
+            {(() => {
+              const label = getCategoryShortcutLabel(index);
+              return label !== null ? (
+                <kbd className="shrink-0 rounded border bg-muted px-1 text-xs text-muted-foreground font-mono tabular-nums">
+                  {label}
+                </kbd>
+              ) : null;
+            })()}
             <div className="flex shrink-0">
               <Button
                 variant="ghost"

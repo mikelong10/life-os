@@ -12,6 +12,7 @@ import { TimeSlotRow } from "./TimeSlotRow";
 import { MultiSelectBar } from "./MultiSelectBar";
 import { SLOTS_PER_DAY } from "@/lib/constants";
 import { slotIndexToTimeRange } from "@/lib/slotUtils";
+import { getCategoryIndexFromKey } from "@/lib/categoryShortcuts";
 import { X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useDragSelect } from "@/hooks/use-drag-select";
@@ -35,6 +36,9 @@ export function TimeGrid({ date }: { date: string }) {
   const bottomPanelRef = useRef<HTMLDivElement>(null);
   const [bottomPanelHeight, setBottomPanelHeight] = useState(0);
 
+  // Track whether we need to scroll on the next panel height update
+  const pendingScrollSlotRef = useRef<number | null>(null);
+
   useEffect(() => {
     if (!isMobile || editorSlot === null || !bottomPanelRef.current) {
       setBottomPanelHeight(0);
@@ -43,7 +47,24 @@ export function TimeGrid({ date }: { date: string }) {
     const el = bottomPanelRef.current;
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        setBottomPanelHeight(entry.contentRect.height);
+        const height = entry.contentRect.height;
+        setBottomPanelHeight(height);
+        // Scroll the pending slot into view now that panel height is known
+        if (pendingScrollSlotRef.current !== null) {
+          const slotIndex = pendingScrollSlotRef.current;
+          pendingScrollSlotRef.current = null;
+          requestAnimationFrame(() => {
+            const row = gridRef.current?.querySelector(
+              `[data-slot-index="${slotIndex}"]`
+            ) as HTMLElement | null;
+            const viewport = gridRef.current?.querySelector(
+              '[data-slot="scroll-area-viewport"]'
+            ) as HTMLElement | null;
+            if (!row || !viewport) return;
+            const visibleHeight = viewport.clientHeight - height;
+            viewport.scrollTop = row.offsetTop - visibleHeight + row.offsetHeight;
+          });
+        }
       }
     });
     observer.observe(el);
@@ -74,22 +95,31 @@ export function TimeGrid({ date }: { date: string }) {
   const activeSlot = editorSlot !== null ? slotMap.get(editorSlot) : undefined;
   const activeCategoryId = activeSlot?.categoryId;
 
-  const scrollSlotIntoView = useCallback((index: number) => {
-    const row = gridRef.current?.querySelector(
-      `[data-slot-index="${index}"]`
-    ) as HTMLElement | null;
-    const viewport = gridRef.current?.querySelector(
-      '[data-slot="scroll-area-viewport"]'
-    ) as HTMLElement | null;
-    if (!row || !viewport) return;
+  const scrollSlotIntoView = useCallback(
+    (index: number) => {
+      const row = gridRef.current?.querySelector(
+        `[data-slot-index="${index}"]`
+      ) as HTMLElement | null;
+      const viewport = gridRef.current?.querySelector(
+        '[data-slot="scroll-area-viewport"]'
+      ) as HTMLElement | null;
+      if (!row || !viewport) return;
 
-    const rowTop = row.offsetTop;
-    const rowHeight = row.offsetHeight;
-    const viewportHeight = viewport.clientHeight;
-    // Position the slot in the upper quarter of the viewport so it stays
-    // visible above the mobile bottom panel (and reads naturally on desktop)
-    viewport.scrollTop = rowTop - viewportHeight / 4 + rowHeight / 2;
-  }, []);
+      const rowTop = row.offsetTop;
+      const rowHeight = row.offsetHeight;
+      const viewportHeight = viewport.clientHeight;
+
+      if (isMobile) {
+        // Position the slot just above the bottom panel
+        const visibleHeight = viewportHeight - bottomPanelHeight;
+        viewport.scrollTop = rowTop - visibleHeight + rowHeight;
+      } else {
+        // Position the slot in the upper quarter of the viewport
+        viewport.scrollTop = rowTop - viewportHeight / 4 + rowHeight / 2;
+      }
+    },
+    [isMobile, bottomPanelHeight]
+  );
 
   const openEditor = useCallback(
     (index: number) => {
@@ -135,8 +165,9 @@ export function TimeGrid({ date }: { date: string }) {
       setAnchorSlot(index);
       setFocusedSlot(index);
       openEditor(index);
+      if (isMobile) pendingScrollSlotRef.current = index;
     },
-    [openEditor, justFinishedDragRef]
+    [openEditor, justFinishedDragRef, isMobile]
   );
 
   const handleShiftClick = useCallback(
@@ -282,10 +313,12 @@ export function TimeGrid({ date }: { date: string }) {
           break;
         }
         default: {
-          const num = parseInt(e.key);
-          if (num >= 0 && num <= 9 && categories) {
+          // Don't intercept browser shortcuts (e.g. Cmd+1 to switch tabs)
+          if (e.metaKey || e.ctrlKey || e.altKey) break;
+          const catIndex = getCategoryIndexFromKey(e.key);
+          if (catIndex !== null && categories) {
             e.preventDefault();
-            const cat = categories[num];
+            const cat = categories[catIndex];
             if (cat) {
               if (selectedSlots.size > 0) {
                 const slots = Array.from(selectedSlots);
@@ -363,6 +396,7 @@ export function TimeGrid({ date }: { date: string }) {
         <CategoryPicker
           onSelect={handleCategorySelect}
           selectedId={activeCategoryId}
+          maxVisibleRows={isMobile ? 5 : undefined}
         />
         <div className="space-y-1.5">
           <Label className="text-xs font-mono text-muted-foreground">
