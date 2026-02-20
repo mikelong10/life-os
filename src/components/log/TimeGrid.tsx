@@ -12,6 +12,7 @@ import { TimeSlotRow } from "./TimeSlotRow";
 import { MultiSelectBar } from "./MultiSelectBar";
 import { SLOTS_PER_DAY } from "@/lib/constants";
 import { slotIndexToTimeRange } from "@/lib/slotUtils";
+import { getCategoryIndexFromKey } from "@/lib/categoryShortcuts";
 import { X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useDragSelect } from "@/hooks/use-drag-select";
@@ -282,10 +283,10 @@ export function TimeGrid({ date }: { date: string }) {
           break;
         }
         default: {
-          const num = parseInt(e.key);
-          if (num >= 0 && num <= 9 && categories) {
+          const catIndex = getCategoryIndexFromKey(e.key);
+          if (catIndex !== null && categories) {
             e.preventDefault();
-            const cat = categories[num];
+            const cat = categories[catIndex];
             if (cat) {
               if (selectedSlots.size > 0) {
                 const slots = Array.from(selectedSlots);
@@ -363,6 +364,7 @@ export function TimeGrid({ date }: { date: string }) {
         <CategoryPicker
           onSelect={handleCategorySelect}
           selectedId={activeCategoryId}
+          maxVisibleRows={isMobile ? 5 : undefined}
         />
         <div className="space-y-1.5">
           <Label className="text-xs font-mono text-muted-foreground">
