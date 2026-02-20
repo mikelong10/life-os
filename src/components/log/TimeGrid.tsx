@@ -283,6 +283,8 @@ export function TimeGrid({ date }: { date: string }) {
           break;
         }
         default: {
+          // Don't intercept browser shortcuts (e.g. Cmd+1 to switch tabs)
+          if (e.metaKey || e.ctrlKey || e.altKey) break;
           const catIndex = getCategoryIndexFromKey(e.key);
           if (catIndex !== null && categories) {
             e.preventDefault();
