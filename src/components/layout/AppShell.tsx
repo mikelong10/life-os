@@ -102,7 +102,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider className="min-w-[384px]">
-      <Sidebar collapsible="icon">
+      <Sidebar variant="inset" collapsible="icon">
         <SidebarHeader className="p-4">
           <span className="font-mono text-sm font-bold text-primary group-data-[collapsible=icon]:hidden">
             life os
