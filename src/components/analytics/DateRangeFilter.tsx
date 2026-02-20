@@ -18,7 +18,7 @@ export function DateRangeFilter({
   onNext: () => void;
 }) {
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
       <Tabs
         value={view}
         onValueChange={(v) => onViewChange(v as DateRangeView)}

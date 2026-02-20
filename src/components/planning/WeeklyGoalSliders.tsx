@@ -73,23 +73,17 @@ export function WeeklyGoalSliders({
 
         return (
           <div key={cat._id} className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
                 <span
-                  className="h-3 w-3 rounded-sm"
+                  className="h-3 w-3 shrink-0 rounded-sm"
                   style={{ backgroundColor: cat.color }}
                 />
-                <span className="text-sm font-mono">{cat.name}</span>
+                <span className="text-sm font-mono truncate">{cat.name}</span>
               </div>
-              <div className="flex items-center gap-3 text-xs font-mono text-muted-foreground">
-                <span>Last: {actual.toFixed(1)}h</span>
-                <span className="font-medium text-foreground">
-                  Goal: {goal.toFixed(1)}h{" "}
-                  <span className="font-normal text-muted-foreground">
-                    ({(goal / 7).toFixed(1)}h/d)
-                  </span>
-                </span>
-              </div>
+              <span className="text-sm font-mono font-medium text-foreground shrink-0">
+                {goal.toFixed(1)}h
+              </span>
             </div>
             <Slider
               value={[goal]}
@@ -100,6 +94,10 @@ export function WeeklyGoalSliders({
               onValueCommit={([v]) => handleCommit(cat._id, v)}
               className="w-full"
             />
+            <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
+              <span>Last: {actual.toFixed(1)}h</span>
+              <span>{(goal / 7).toFixed(1)}h/day</span>
+            </div>
           </div>
         );
       })}

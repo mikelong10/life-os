@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/chart";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { format, parse } from "date-fns";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function TrendLineChart({
   slots,
@@ -25,6 +26,8 @@ export function TrendLineChart({
   chartConfig: ChartConfig;
   groupBy: "day" | "week" | "month";
 }) {
+  const isMobile = useIsMobile();
+
   const data = useMemo(() => {
     // Group slots by date, then by category
     const grouped = new Map<string, Map<string, number>>();
@@ -70,20 +73,30 @@ export function TrendLineChart({
   }
 
   return (
-    <ChartContainer config={chartConfig} className="h-72 w-full">
+    <ChartContainer config={chartConfig} className="h-72 w-full aspect-auto">
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" vertical={false} />
         <XAxis
           dataKey="date"
-          tick={{ fontSize: 11, fontFamily: "Geist Mono" }}
+          tick={{ fontSize: isMobile ? 10 : 11, fontFamily: "Geist Mono" }}
           tickLine={false}
           axisLine={false}
+          tickFormatter={(value: string) => {
+            if (!isMobile) return value;
+            try {
+              if (value.length === 7) return format(parse(value, "yyyy-MM", new Date()), "MMM");
+              return format(parse(value, "yyyy-MM-dd", new Date()), "M/d");
+            } catch {
+              return value;
+            }
+          }}
         />
         <YAxis
-          tick={{ fontSize: 11, fontFamily: "Geist Mono" }}
+          tick={{ fontSize: isMobile ? 10 : 11, fontFamily: "Geist Mono" }}
           tickLine={false}
           axisLine={false}
-          label={{
+          width={isMobile ? 30 : 60}
+          label={isMobile ? undefined : {
             value: "hours",
             angle: -90,
             position: "insideLeft",

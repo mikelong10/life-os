@@ -120,7 +120,7 @@ function PlanningPage() {
   }, [goals]);
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-4 p-4 md:gap-6 md:p-6">
       <div>
         <h1 className="text-xl font-mono font-semibold text-foreground">
           Planning
@@ -144,7 +144,7 @@ function PlanningPage() {
         </div>
       ) : (
         <div className="grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2 rounded-lg border bg-card p-4">
+          <div className="lg:col-span-2 rounded-lg border bg-card p-4 overflow-hidden min-w-0">
             <h3 className="mb-4 text-sm font-mono font-medium text-muted-foreground">
               Weekly Hour Goals
             </h3>
@@ -159,7 +159,7 @@ function PlanningPage() {
             />
           </div>
 
-          <div className="rounded-lg border bg-card p-4">
+          <div className="rounded-lg border bg-card p-4 overflow-hidden min-w-0">
             <h3 className="mb-4 text-sm font-mono font-medium text-muted-foreground">
               Planned Distribution
             </h3>
