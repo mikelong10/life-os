@@ -8,6 +8,7 @@ import {
   type DateRangeView,
 } from "@/components/analytics/DateRangeFilter";
 import { CategoryPieChart } from "@/components/analytics/CategoryPieChart";
+import { Card } from "@/components/ui/card";
 import { TrendLineChart } from "@/components/analytics/TrendLineChart";
 import { DayTimelineStrip } from "@/components/analytics/DayTimelineStrip";
 import { buildChartConfig } from "@/lib/chartUtils";
@@ -154,8 +155,8 @@ function AnalyticsPage() {
       ) : (
         <>
           <div className="grid gap-6 lg:grid-cols-[minmax(0,_320px)_1fr]">
-            <div className="rounded-lg border bg-card p-4 overflow-hidden min-w-0">
-              <h3 className="mb-4 text-sm font-mono font-medium text-muted-foreground">
+            <Card className="p-4 gap-4 overflow-hidden min-w-0">
+              <h3 className="text-sm font-mono font-medium text-muted-foreground">
                 Time Breakdown
               </h3>
               <CategoryPieChart
@@ -163,10 +164,10 @@ function AnalyticsPage() {
                 categories={categories as Doc<"categories">[]}
                 chartConfig={chartConfig}
               />
-            </div>
+            </Card>
 
-            <div className="rounded-lg border bg-card p-4 overflow-hidden min-w-0">
-              <h3 className="mb-4 text-sm font-mono font-medium text-muted-foreground">
+            <Card className="p-4 gap-4 overflow-hidden min-w-0">
+              <h3 className="text-sm font-mono font-medium text-muted-foreground">
                 {view === "day" ? "Day Timeline" : "Trends"}
               </h3>
               {view === "day" ? (
@@ -182,7 +183,7 @@ function AnalyticsPage() {
                   groupBy={trendGroupBy}
                 />
               )}
-            </div>
+            </Card>
           </div>
 
         </>
