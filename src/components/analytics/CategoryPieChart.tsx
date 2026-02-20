@@ -80,6 +80,7 @@ export function CategoryPieChart({
           outerRadius={100}
           strokeWidth={2}
           stroke="var(--background)"
+          animationDuration={800}
         >
           {data.map((entry) => (
             <Cell key={entry?.id} fill={entry?.fill} />

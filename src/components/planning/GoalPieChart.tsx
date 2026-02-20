@@ -29,14 +29,14 @@ export function GoalPieChart({
 
   if (data.length === 0) {
     return (
-      <div className="flex h-64 items-center justify-center text-sm text-muted-foreground font-mono">
+      <div className="flex aspect-square max-h-[400px] items-center justify-center text-sm text-muted-foreground font-mono">
         Set goals to see distribution
       </div>
     );
   }
 
   return (
-    <ChartContainer config={chartConfig} className="h-64 w-full aspect-auto">
+    <ChartContainer config={chartConfig} className="w-full aspect-square max-h-[400px]">
       <PieChart>
         <ChartTooltip
           content={({ active, payload }) => {
@@ -70,6 +70,7 @@ export function GoalPieChart({
           outerRadius="85%"
           strokeWidth={2}
           stroke="var(--background)"
+          animationDuration={800}
         >
           {data.map((entry) => (
             <Cell key={entry.id} fill={entry.fill} />
