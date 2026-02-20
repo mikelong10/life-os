@@ -10,6 +10,7 @@ import {
 import { CategoryPieChart } from "@/components/analytics/CategoryPieChart";
 import { Card } from "@/components/ui/card";
 import { TrendLineChart } from "@/components/analytics/TrendLineChart";
+import { DayTimelineStrip } from "@/components/analytics/DayTimelineStrip";
 import { buildChartConfig } from "@/lib/chartUtils";
 import {
   todayString,
@@ -167,14 +168,21 @@ function AnalyticsPage() {
 
             <Card className="p-4 gap-4 overflow-hidden min-w-0">
               <h3 className="text-sm font-mono font-medium text-muted-foreground">
-                Trends
+                {view === "day" ? "Day Timeline" : "Trends"}
               </h3>
-              <TrendLineChart
-                slots={slots as Doc<"timeSlots">[]}
-                categories={categories as Doc<"categories">[]}
-                chartConfig={chartConfig}
-                groupBy={trendGroupBy}
-              />
+              {view === "day" ? (
+                <DayTimelineStrip
+                  slots={slots as Doc<"timeSlots">[]}
+                  categories={categories as Doc<"categories">[]}
+                />
+              ) : (
+                <TrendLineChart
+                  slots={slots as Doc<"timeSlots">[]}
+                  categories={categories as Doc<"categories">[]}
+                  chartConfig={chartConfig}
+                  groupBy={trendGroupBy}
+                />
+              )}
             </Card>
           </div>
 
