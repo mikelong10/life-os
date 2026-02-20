@@ -84,7 +84,10 @@ export function WeeklyGoalSliders({
               <div className="flex items-center gap-3 text-xs font-mono text-muted-foreground">
                 <span>Last: {actual.toFixed(1)}h</span>
                 <span className="font-medium text-foreground">
-                  Goal: {goal.toFixed(1)}h
+                  Goal: {goal.toFixed(1)}h{" "}
+                  <span className="font-normal text-muted-foreground">
+                    ({(goal / 7).toFixed(1)}h/d)
+                  </span>
                 </span>
               </div>
             </div>
@@ -108,7 +111,10 @@ export function WeeklyGoalSliders({
             totalGoalHours > maxHours ? "text-destructive" : ""
           }`}
         >
-          {totalGoalHours.toFixed(1)}h / {maxHours}h
+          {totalGoalHours.toFixed(1)}h / {maxHours}h{" "}
+          <span className="font-normal text-muted-foreground">
+            ({(totalGoalHours / 7).toFixed(1)}h/d)
+          </span>
         </span>
       </div>
     </div>
