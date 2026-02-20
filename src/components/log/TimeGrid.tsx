@@ -114,8 +114,8 @@ export function TimeGrid({ date }: { date: string }) {
         const visibleHeight = viewportHeight - bottomPanelHeight;
         viewport.scrollTop = rowTop - visibleHeight + rowHeight;
       } else {
-        // Position the slot in the upper quarter of the viewport
-        viewport.scrollTop = rowTop - viewportHeight / 4 + rowHeight / 2;
+        // Position the slot in the center of the viewport
+        viewport.scrollTop = rowTop - viewportHeight / 2 + rowHeight / 2;
       }
     },
     [isMobile, bottomPanelHeight]
@@ -240,12 +240,19 @@ export function TimeGrid({ date }: { date: string }) {
     setFocusedSlot(firstEmpty);
     openEditor(firstEmpty);
 
+    // On mobile, defer scroll until the bottom panel height is known
+    if (isMobile) {
+      pendingScrollSlotRef.current = firstEmpty;
+    }
+
     // Focus grid after render so keyboard works immediately
     requestAnimationFrame(() => {
       gridRef.current?.focus();
-      scrollSlotIntoView(firstEmpty);
+      if (!isMobile) {
+        scrollSlotIntoView(firstEmpty);
+      }
     });
-  }, [slots, categories, date, slotMap, openEditor, scrollSlotIntoView]);
+  }, [slots, categories, date, slotMap, openEditor, scrollSlotIntoView, isMobile]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {

@@ -87,7 +87,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   if (isMobile) {
     return (
-      <div className="flex min-h-svh min-w-[384px] flex-col bg-background">
+      <div className="flex max-h-svh min-w-[384px] flex-col bg-background">
         <header className="flex h-10 shrink-0 items-center justify-between border-b px-4">
           <div className="flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 36 36" className="shrink-0">
@@ -99,7 +99,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
           <ThemeToggle />
         </header>
-        <main className="flex-1 pb-[calc(4rem+env(safe-area-inset-bottom,0px))]">
+        <main className="flex-1 overflow-auto pb-[calc(4rem+env(safe-area-inset-bottom,0px))]">
           {children}
         </main>
         <MobileNav currentPath={currentPath} />
@@ -108,7 +108,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <SidebarProvider className="min-w-[384px]">
+    <SidebarProvider className="min-w-[384px] max-h-svh">
       <Sidebar variant="inset" collapsible="icon">
         <SidebarHeader className="p-4">
           <div className="flex items-center gap-2">
@@ -151,7 +151,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <SidebarTrigger className="-ml-1" />
           <ThemeToggle />
         </header>
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 overflow-auto">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );

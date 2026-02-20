@@ -12,7 +12,7 @@ function LogPage() {
   const [date, setDate] = useState(todayString);
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-6.5rem-env(safe-area-inset-bottom,0px))] md:h-[calc(100dvh-2.5rem)]">
+    <div className="flex flex-col h-[calc(100dvh-6.5rem-env(safe-area-inset-bottom,0px))] md:h-full">
       <div className="flex items-center justify-between border-b px-4 py-3">
         <DayNavigator
           date={date}
