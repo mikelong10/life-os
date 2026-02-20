@@ -152,7 +152,7 @@ function AnalyticsPage() {
         </div>
       ) : (
         <>
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,_320px)_1fr]">
             <div className="rounded-lg border bg-card p-4 overflow-hidden min-w-0">
               <h3 className="mb-4 text-sm font-mono font-medium text-muted-foreground">
                 Time Breakdown
