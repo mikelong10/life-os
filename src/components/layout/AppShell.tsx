@@ -48,19 +48,21 @@ function UserProfileFooter() {
     : (user.email?.[0]?.toUpperCase() ?? "?");
 
   return (
-    <div className="flex items-center gap-2 px-2 py-1.5">
-      {user.image ? (
-        <img
-          src={user.image}
-          alt={user.name ?? "User"}
-          className="h-9 w-9 shrink-0 rounded-full object-cover"
-          referrerPolicy="no-referrer"
-        />
-      ) : (
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-medium">
-          {initials}
-        </div>
-      )}
+    <div className="flex items-center gap-2 px-2 py-1.5 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
+      <div className="group-data-[collapsible=icon]:hidden">
+        {user.image ? (
+          <img
+            src={user.image}
+            alt={user.name ?? "User"}
+            className="h-9 w-9 shrink-0 rounded-full object-cover"
+            referrerPolicy="no-referrer"
+          />
+        ) : (
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-medium">
+            {initials}
+          </div>
+        )}
+      </div>
       <div className="flex min-w-0 flex-col group-data-[collapsible=icon]:hidden">
         <span className="truncate text-sm font-medium">{user.name}</span>
         <span className="truncate text-xs text-muted-foreground">
@@ -69,7 +71,7 @@ function UserProfileFooter() {
       </div>
       <button
         onClick={() => authClient.signOut()}
-        className="ml-auto shrink-0 rounded-md p-1 text-muted-foreground hover:text-foreground group-data-[collapsible=icon]:hidden"
+        className="ml-auto shrink-0 rounded-md p-1 text-muted-foreground hover:text-foreground group-data-[collapsible=icon]:ml-0"
         title="Sign out"
       >
         <LogOut className="h-4 w-4" />
