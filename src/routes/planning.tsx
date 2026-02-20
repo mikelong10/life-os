@@ -8,6 +8,7 @@ import {
   type PlanningPeriod,
 } from "@/components/planning/PeriodSelector";
 import { WeeklyGoalSliders } from "@/components/planning/WeeklyGoalSliders";
+import { Card } from "@/components/ui/card";
 import { GoalPieChart } from "@/components/planning/GoalPieChart";
 import { buildChartConfig } from "@/lib/chartUtils";
 import { todayString, getWeekStart, getWeekEnd, fromDateString, toDateString } from "@/lib/dateUtils";
@@ -144,8 +145,8 @@ function PlanningPage() {
         </div>
       ) : (
         <div className="grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2 rounded-lg border bg-card p-4 overflow-hidden min-w-0">
-            <h3 className="mb-4 text-sm font-mono font-medium text-muted-foreground">
+          <Card className="lg:col-span-2 p-4 gap-4 overflow-hidden min-w-0">
+            <h3 className="text-sm font-mono font-medium text-muted-foreground">
               Weekly Hour Goals
             </h3>
             <WeeklyGoalSliders
@@ -157,10 +158,10 @@ function PlanningPage() {
               weekStart={weekStart}
               maxHours={maxHours}
             />
-          </div>
+          </Card>
 
-          <div className="rounded-lg border bg-card p-4 overflow-hidden min-w-0">
-            <h3 className="mb-4 text-sm font-mono font-medium text-muted-foreground">
+          <Card className="p-4 gap-4 overflow-hidden min-w-0">
+            <h3 className="text-sm font-mono font-medium text-muted-foreground">
               Planned Distribution
             </h3>
             <GoalPieChart
@@ -168,7 +169,7 @@ function PlanningPage() {
               goals={goalMap}
               chartConfig={chartConfig}
             />
-          </div>
+          </Card>
         </div>
       )}
     </div>
