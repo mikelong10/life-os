@@ -27,6 +27,11 @@ export function GoalPieChart({
       .filter((d) => d.value > 0);
   }, [categories, goals]);
 
+  const totalHours = useMemo(
+    () => data.reduce((sum, d) => sum + d.value, 0),
+    [data]
+  );
+
   if (data.length === 0) {
     return (
       <div className="flex aspect-square max-h-[400px] items-center justify-center text-sm text-muted-foreground font-mono">
@@ -54,6 +59,9 @@ export function GoalPieChart({
                   </span>
                   <span className="text-sm font-mono font-semibold text-popover-foreground">
                     {entry.value}h
+                  </span>
+                  <span className="text-sm font-mono text-muted-foreground">
+                    ({Math.round(((entry.value as number) / totalHours) * 100)}%)
                   </span>
                 </div>
               </div>

@@ -65,6 +65,9 @@ export function CategoryPieChart({
                   <span className="text-sm font-mono font-semibold text-popover-foreground">
                     {entry.value}h
                   </span>
+                  <span className="text-sm font-mono text-muted-foreground">
+                    ({Math.round(((entry.value as number) / totalHours) * 100)}%)
+                  </span>
                 </div>
               </div>
             );
@@ -76,7 +79,7 @@ export function CategoryPieChart({
           nameKey="name"
           cx="50%"
           cy="50%"
-          innerRadius={60}
+          innerRadius={50}
           outerRadius={100}
           strokeWidth={2}
           stroke="var(--background)"
