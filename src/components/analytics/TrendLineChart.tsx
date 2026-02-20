@@ -95,7 +95,7 @@ export function TrendLineChart({
           tick={{ fontSize: isMobile ? 10 : 11, fontFamily: "Geist Mono" }}
           tickLine={false}
           axisLine={false}
-          width={isMobile ? 30 : undefined}
+          width={isMobile ? 30 : 60}
           label={isMobile ? undefined : {
             value: "hours",
             angle: -90,
