@@ -66,7 +66,7 @@ export function GoalPieChart({
           nameKey="name"
           cx="50%"
           cy="50%"
-          innerRadius="55%"
+          innerRadius={0}
           outerRadius="85%"
           strokeWidth={2}
           stroke="var(--background)"
