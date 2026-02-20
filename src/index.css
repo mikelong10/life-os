@@ -138,7 +138,10 @@
   * {
     @apply border-border outline-ring/50;
     }
+  html {
+    @apply overscroll-none;
+    }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-sidebar text-foreground;
     }
 }
