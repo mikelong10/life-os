@@ -18,7 +18,7 @@ export function PeriodSelector({
   onNext: () => void;
 }) {
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
       <Tabs
         value={period}
         onValueChange={(v) => onPeriodChange(v as PlanningPeriod)}

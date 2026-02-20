@@ -7,7 +7,7 @@ export const Route = createFileRoute("/settings")({
 
 function SettingsPage() {
   return (
-    <div className="mx-auto max-w-xl p-6">
+    <div className="mx-auto max-w-xl p-4 md:p-6">
       <h1 className="text-xl font-mono font-semibold text-foreground">Settings</h1>
       <p className="mt-1 text-sm text-muted-foreground">
         Manage your time tracking preferences.

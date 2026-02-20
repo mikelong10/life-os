@@ -46,7 +46,7 @@ export function CategoryPieChart({
   }
 
   return (
-    <ChartContainer config={chartConfig} className="h-64 w-full">
+    <ChartContainer config={chartConfig} className="h-64 w-full aspect-auto">
       <PieChart>
         <ChartTooltip
           content={({ active, payload }) => {

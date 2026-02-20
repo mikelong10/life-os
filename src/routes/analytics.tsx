@@ -128,7 +128,7 @@ function AnalyticsPage() {
   const trendGroupBy = view === "year" ? "month" : view === "month" ? "week" : "day";
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-4 p-4 md:gap-6 md:p-6">
       <div>
         <h1 className="text-xl font-mono font-semibold text-foreground">
           Analytics
@@ -153,7 +153,7 @@ function AnalyticsPage() {
       ) : (
         <>
           <div className="grid gap-6 lg:grid-cols-2">
-            <div className="rounded-lg border bg-card p-4">
+            <div className="rounded-lg border bg-card p-4 overflow-hidden min-w-0">
               <h3 className="mb-4 text-sm font-mono font-medium text-muted-foreground">
                 Time Breakdown
               </h3>
@@ -164,7 +164,7 @@ function AnalyticsPage() {
               />
             </div>
 
-            <div className="rounded-lg border bg-card p-4">
+            <div className="rounded-lg border bg-card p-4 overflow-hidden min-w-0">
               <h3 className="mb-4 text-sm font-mono font-medium text-muted-foreground">
                 Trends
               </h3>
