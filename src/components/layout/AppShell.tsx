@@ -85,7 +85,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   if (isMobile) {
     return (
-      <div className="flex min-h-svh flex-col bg-background">
+      <div className="flex min-h-svh min-w-[384px] flex-col bg-background">
         <header className="flex h-10 shrink-0 items-center justify-between border-b px-4">
           <span className="font-mono text-sm font-bold text-primary">
             life os
@@ -101,7 +101,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="min-w-[384px]">
       <Sidebar collapsible="icon">
         <SidebarHeader className="p-4">
           <span className="font-mono text-sm font-bold text-primary group-data-[collapsible=icon]:hidden">
