@@ -9,6 +9,7 @@ import { Loader } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { AppShell } from "@/components/layout/AppShell";
+import { ReloadPrompt } from "@/components/pwa/ReloadPrompt";
 import { api } from "../../convex/_generated/api";
 import type { AuthContext } from "../main";
 
@@ -34,34 +35,37 @@ function RootComponent() {
     typeof window !== "undefined" &&
     window.location.search.includes("ott=");
 
-  if (isLoading || isExchangingToken) {
-    return (
-      <ThemeProvider defaultTheme="system">
+  const content = (() => {
+    if (isLoading || isExchangingToken) {
+      return (
         <div className="flex h-svh items-center justify-center">
           <Loader className="h-5 w-5 animate-spin text-muted-foreground" />
         </div>
-      </ThemeProvider>
-    );
-  }
+      );
+    }
 
-  if (!isAuthenticated) {
-    return (
-      <ThemeProvider defaultTheme="system">
+    if (!isAuthenticated) {
+      return (
         <TooltipProvider>
           <Outlet />
         </TooltipProvider>
-      </ThemeProvider>
-    );
-  }
+      );
+    }
 
-  return (
-    <ThemeProvider defaultTheme="system">
+    return (
       <TooltipProvider>
         <SeedCategories />
         <AppShell>
           <Outlet />
         </AppShell>
       </TooltipProvider>
+    );
+  })();
+
+  return (
+    <ThemeProvider defaultTheme="system">
+      <ReloadPrompt />
+      {content}
     </ThemeProvider>
   );
 }
