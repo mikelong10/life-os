@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Id, Doc } from "../../../convex/_generated/dataModel";
@@ -14,6 +14,7 @@ import { CATEGORY_PALETTE, getNextCategoryColor } from "@/lib/constants";
 import { getCategoryShortcutLabel } from "@/lib/categoryShortcuts";
 import { Trash2, Plus, GripVertical, ChevronUp, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSortable } from "@/hooks/use-sortable";
 
 export function CategoryManager() {
   const categories = useQuery(api.categories.list);
@@ -25,10 +26,20 @@ export function CategoryManager() {
   const [newName, setNewName] = useState("");
   const [newColorOverride, setNewColorOverride] = useState<string | null>(null);
 
-  // Drag state
-  const [dragIndex, setDragIndex] = useState<number | null>(null);
-  const [overIndex, setOverIndex] = useState<number | null>(null);
-  const dragRef = useRef<number | null>(null);
+  const handleSortReorder = async (fromIndex: number, toIndex: number) => {
+    if (!categories) return;
+    const items = [...categories] as Doc<"categories">[];
+    const [moved] = items.splice(fromIndex, 1);
+    items.splice(toIndex, 0, moved);
+    const orderedIds = items.map((c) => c._id);
+    await reorderCategories({ orderedIds });
+  };
+
+  const { dragIndex, overIndex, isDragging, handlePointerDown } = useSortable({
+    itemCount: categories?.length ?? 0,
+    onReorder: handleSortReorder,
+    getLabel: getCategoryShortcutLabel,
+  });
 
   if (!categories || !allCategories) {
     return (
@@ -75,29 +86,6 @@ export function CategoryManager() {
     return items;
   };
 
-  const handleDragStart = (e: React.DragEvent, index: number) => {
-    e.dataTransfer.effectAllowed = "move";
-    dragRef.current = index;
-    setDragIndex(index);
-  };
-
-  const handleDragOver = (e: React.DragEvent, index: number) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-    setOverIndex(index);
-  };
-
-  const handleDragEnd = async () => {
-    if (dragIndex !== null && overIndex !== null && dragIndex !== overIndex) {
-      const reordered = getReorderedList();
-      const orderedIds = reordered.map((c) => c._id);
-      await reorderCategories({ orderedIds });
-    }
-    setDragIndex(null);
-    setOverIndex(null);
-    dragRef.current = null;
-  };
-
   const handleMove = async (index: number, direction: -1 | 1) => {
     const target = index + direction;
     if (target < 0 || target >= categories.length) return;
@@ -117,16 +105,16 @@ export function CategoryManager() {
         {displayList.map((cat, index) => (
           <div
             key={cat._id}
-            draggable
-            onDragStart={(e) => handleDragStart(e, index)}
-            onDragOver={(e) => handleDragOver(e, index)}
-            onDragEnd={handleDragEnd}
+            data-sortable-index={index}
             className={cn(
-              "flex items-center gap-2 rounded-md border bg-card px-3 py-2 transition-opacity",
-              dragIndex === index && overIndex !== null && dragIndex !== overIndex && "opacity-40"
+              "flex items-center gap-2 rounded-md border bg-card px-3 py-2",
+              isDragging && dragIndex !== overIndex && index === overIndex && "opacity-40"
             )}
           >
-            <GripVertical className="h-4 w-4 shrink-0 text-muted-foreground cursor-grab active:cursor-grabbing" />
+            <GripVertical
+              className="h-4 w-4 shrink-0 text-muted-foreground cursor-grab active:cursor-grabbing touch-none"
+              onPointerDown={(e) => handlePointerDown(index, e)}
+            />
             <ColorPicker
               color={cat.color}
               onChange={(color) => handleColorChange(cat._id, color)}
