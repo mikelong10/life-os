@@ -14,7 +14,7 @@ function LogPage() {
 
   return (
     <div className="flex h-[calc(100dvh-6.5rem-env(safe-area-inset-bottom,0px))] flex-col md:h-full">
-      <div className="flex items-center justify-between border-b px-4 py-3">
+      <div className="flex items-center justify-center border-b px-4 py-3 md:justify-between">
         <DayNavigator
           date={date}
           onPrev={() => setDate(getPrevDay(date))}

@@ -23,7 +23,9 @@ export function DayNavigator({
         <ChevronLeft className="h-4 w-4" />
       </Button>
       <div className="flex items-center gap-2">
-        <h2 className="font-mono text-sm font-medium">{formatDisplayDate(dateObj)}</h2>
+        <h2 className="font-mono text-sm font-medium whitespace-nowrap">
+          {formatDisplayDate(dateObj)}
+        </h2>
         {!today && (
           <Button
             variant="outline"
