@@ -1,0 +1,7 @@
+{
+  "ignorePatterns": ["dist/**", "**/_generated/**"],
+  "sortImports": {},
+  "sortTailwindcss": {
+    "functions": ["cn", "cva", "clsx", "twMerge"]
+  }
+}
