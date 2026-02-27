@@ -1,20 +1,18 @@
-import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import type { Id, Doc } from "../../../convex/_generated/dataModel";
+import { Trash2, Plus, GripVertical, ChevronUp, ChevronDown } from "lucide-react";
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { CATEGORY_PALETTE, getNextCategoryColor } from "@/lib/constants";
-import { getCategoryShortcutLabel } from "@/lib/categoryShortcuts";
-import { Trash2, Plus, GripVertical, ChevronUp, ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useSortable } from "@/hooks/use-sortable";
+import { getCategoryShortcutLabel } from "@/lib/categoryShortcuts";
+import { CATEGORY_PALETTE, getNextCategoryColor } from "@/lib/constants";
+import { cn } from "@/lib/utils";
+
+import { api } from "../../../convex/_generated/api";
+import type { Id, Doc } from "../../../convex/_generated/dataModel";
 
 export function CategoryManager() {
   const categories = useQuery(api.categories.list);
@@ -44,7 +42,7 @@ export function CategoryManager() {
   if (!categories || !allCategories) {
     return (
       <div className="p-6">
-        <p className="text-sm text-muted-foreground font-mono">Loading categories...</p>
+        <p className="text-muted-foreground font-mono text-sm">Loading categories...</p>
       </div>
     );
   }
@@ -97,7 +95,9 @@ export function CategoryManager() {
   };
 
   const displayList =
-    dragIndex !== null && overIndex !== null ? getReorderedList() : (categories as Doc<"categories">[]);
+    dragIndex !== null && overIndex !== null
+      ? getReorderedList()
+      : (categories as Doc<"categories">[]);
 
   return (
     <div className="space-y-4">
@@ -107,12 +107,12 @@ export function CategoryManager() {
             key={cat._id}
             data-sortable-index={index}
             className={cn(
-              "flex items-center gap-2 rounded-md border bg-card px-3 py-2",
-              isDragging && dragIndex !== overIndex && index === overIndex && "opacity-40"
+              "bg-card flex items-center gap-2 rounded-md border px-3 py-2",
+              isDragging && dragIndex !== overIndex && index === overIndex && "opacity-40",
             )}
           >
             <GripVertical
-              className="h-4 w-4 shrink-0 text-muted-foreground cursor-grab active:cursor-grabbing touch-none"
+              className="text-muted-foreground h-4 w-4 shrink-0 cursor-grab touch-none active:cursor-grabbing"
               onPointerDown={(e) => handlePointerDown(index, e)}
             />
             <ColorPicker
@@ -137,7 +137,7 @@ export function CategoryManager() {
             {(() => {
               const label = getCategoryShortcutLabel(index);
               return label !== null ? (
-                <kbd className="shrink-0 rounded border bg-muted px-1 text-xs text-muted-foreground font-mono tabular-nums">
+                <kbd className="bg-muted text-muted-foreground shrink-0 rounded border px-1 font-mono text-xs tabular-nums">
                   {label}
                 </kbd>
               ) : null;
@@ -146,7 +146,7 @@ export function CategoryManager() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground h-6 w-6"
                 onClick={() => handleMove(index, -1)}
                 disabled={index === 0}
               >
@@ -155,7 +155,7 @@ export function CategoryManager() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground h-6 w-6"
                 onClick={() => handleMove(index, 1)}
                 disabled={index >= categories.length - 1}
               >
@@ -165,7 +165,7 @@ export function CategoryManager() {
             <Button
               variant="ghost"
               size="icon"
-              className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
+              className="text-muted-foreground hover:text-destructive h-7 w-7 shrink-0"
               onClick={() => handleArchive(cat._id)}
             >
               <Trash2 className="h-3.5 w-3.5" />
@@ -185,13 +185,8 @@ export function CategoryManager() {
             if (e.key === "Enter") handleAdd();
           }}
         />
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleAdd}
-          disabled={!newName.trim()}
-        >
-          <Plus className="h-3.5 w-3.5 mr-1" />
+        <Button variant="outline" size="sm" onClick={handleAdd} disabled={!newName.trim()}>
+          <Plus className="mr-1 h-3.5 w-3.5" />
           Add
         </Button>
       </div>
@@ -199,20 +194,14 @@ export function CategoryManager() {
   );
 }
 
-function ColorPicker({
-  color,
-  onChange,
-}: {
-  color: string;
-  onChange: (color: string) => void;
-}) {
+function ColorPicker({ color, onChange }: { color: string; onChange: (color: string) => void }) {
   const [open, setOpen] = useState(false);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          className="h-4 w-4 shrink-0 rounded-sm border border-border/50 cursor-pointer hover:ring-2 hover:ring-ring/30 transition-shadow"
+          className="border-border/50 hover:ring-ring/30 h-4 w-4 shrink-0 cursor-pointer rounded-sm border transition-shadow hover:ring-2"
           style={{ backgroundColor: color }}
         />
       </PopoverTrigger>
@@ -223,9 +212,7 @@ function ColorPicker({
               key={c}
               className={cn(
                 "h-6 w-6 rounded-sm border transition-transform hover:scale-110",
-                c === color
-                  ? "border-foreground ring-2 ring-ring"
-                  : "border-border/50"
+                c === color ? "border-foreground ring-ring ring-2" : "border-border/50",
               )}
               style={{ backgroundColor: c }}
               onClick={() => {

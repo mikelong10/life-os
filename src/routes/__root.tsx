@@ -1,15 +1,13 @@
-import { useEffect } from "react";
-import {
-  createRootRouteWithContext,
-  Outlet,
-  redirect,
-} from "@tanstack/react-router";
+import { createRootRouteWithContext, Outlet, redirect } from "@tanstack/react-router";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { Loader } from "lucide-react";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { useEffect } from "react";
+
 import { AppShell } from "@/components/layout/AppShell";
 import { ReloadPrompt } from "@/components/pwa/ReloadPrompt";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { TooltipProvider } from "@/components/ui/tooltip";
+
 import { api } from "../../convex/_generated/api";
 import type { AuthContext } from "../main";
 
@@ -31,15 +29,13 @@ function RootComponent() {
 
   // Show loading during cross-domain token exchange (OAuth callback)
   const isExchangingToken =
-    !isAuthenticated &&
-    typeof window !== "undefined" &&
-    window.location.search.includes("ott=");
+    !isAuthenticated && typeof window !== "undefined" && window.location.search.includes("ott=");
 
   const content = (() => {
     if (isLoading || isExchangingToken) {
       return (
         <div className="flex h-svh items-center justify-center">
-          <Loader className="h-5 w-5 animate-spin text-muted-foreground" />
+          <Loader className="text-muted-foreground h-5 w-5 animate-spin" />
         </div>
       );
     }
@@ -76,10 +72,7 @@ export const Route = createRootRouteWithContext<{ auth: AuthContext }>()({
     if (context.auth.isLoading) return;
     // Don't redirect during cross-domain token exchange (OAuth callback)
     if (location.searchStr?.includes("ott=")) return;
-    if (
-      !context.auth.isAuthenticated &&
-      location.pathname !== "/login"
-    ) {
+    if (!context.auth.isAuthenticated && location.pathname !== "/login") {
       throw redirect({ to: "/login" });
     }
   },

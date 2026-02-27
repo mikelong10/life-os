@@ -1,9 +1,11 @@
 import { useMutation } from "convex/react";
+import { X } from "lucide-react";
+
+import { CategoryPicker } from "@/components/categories/CategoryPicker";
+import { Button } from "@/components/ui/button";
+
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
-import { Button } from "@/components/ui/button";
-import { CategoryPicker } from "@/components/categories/CategoryPicker";
-import { X } from "lucide-react";
 
 export function MultiSelectBar({
   date,
@@ -37,11 +39,9 @@ export function MultiSelectBar({
   if (selectedSlots.size < 2) return null;
 
   return (
-    <div className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] left-1/2 z-40 -translate-x-1/2 rounded-lg border bg-card p-4 shadow-lg">
-      <div className="flex items-center justify-between gap-3 mb-3">
-        <span className="text-sm font-mono font-medium">
-          {selectedSlots.size} slots selected
-        </span>
+    <div className="bg-card fixed bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] left-1/2 z-40 -translate-x-1/2 rounded-lg border p-4 shadow-lg">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <span className="font-mono text-sm font-medium">{selectedSlots.size} slots selected</span>
         <div className="flex items-center gap-1">
           <Button
             variant="ghost"
@@ -51,12 +51,7 @@ export function MultiSelectBar({
           >
             Clear
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-6 w-6"
-            onClick={onClear}
-          >
+          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onClear}>
             <X className="h-3 w-3" />
           </Button>
         </div>

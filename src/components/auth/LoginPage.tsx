@@ -1,12 +1,7 @@
 import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -59,7 +54,7 @@ export function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-svh items-center justify-center bg-background p-4">
+    <div className="bg-background flex min-h-svh items-center justify-center p-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <CardTitle className="font-mono text-lg">life os</CardTitle>
@@ -68,11 +63,7 @@ export function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={handleGoogleSignIn}
-          >
+          <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>
             <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
               <path
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
@@ -96,7 +87,7 @@ export function LoginPage() {
 
           <div className="flex items-center gap-2">
             <Separator className="flex-1" />
-            <span className="text-xs text-muted-foreground">or</span>
+            <span className="text-muted-foreground text-xs">or</span>
             <Separator className="flex-1" />
           </div>
 
@@ -136,23 +127,17 @@ export function LoginPage() {
                 minLength={8}
               />
             </div>
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {error && <p className="text-destructive text-sm">{error}</p>}
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading
-                ? "Loading..."
-                : isSignUp
-                  ? "Create account"
-                  : "Sign in"}
+              {loading ? "Loading..." : isSignUp ? "Create account" : "Sign in"}
             </Button>
           </form>
 
-          <p className="text-center text-xs text-muted-foreground">
-            {isSignUp
-              ? "Already have an account?"
-              : "Don't have an account?"}{" "}
+          <p className="text-muted-foreground text-center text-xs">
+            {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
             <button
               type="button"
-              className="underline hover:text-foreground"
+              className="hover:text-foreground underline"
               onClick={() => {
                 setIsSignUp(!isSignUp);
                 setError("");

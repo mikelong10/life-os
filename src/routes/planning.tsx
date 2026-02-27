@@ -1,26 +1,23 @@
-import { useState, useMemo, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import type { Doc } from "../../convex/_generated/dataModel";
-import {
-  PeriodSelector,
-  type PlanningPeriod,
-} from "@/components/planning/PeriodSelector";
+import { format, addWeeks, subWeeks, addMonths, subMonths, addYears, subYears } from "date-fns";
+import { useState, useMemo, useEffect } from "react";
+
+import { GoalPieChart } from "@/components/planning/GoalPieChart";
+import { PeriodSelector, type PlanningPeriod } from "@/components/planning/PeriodSelector";
 import { WeeklyGoalSliders } from "@/components/planning/WeeklyGoalSliders";
 import { Card } from "@/components/ui/card";
-import { GoalPieChart } from "@/components/planning/GoalPieChart";
 import { buildChartConfig } from "@/lib/chartUtils";
-import { todayString, getWeekStart, getWeekEnd, fromDateString, toDateString } from "@/lib/dateUtils";
 import {
-  format,
-  addWeeks,
-  subWeeks,
-  addMonths,
-  subMonths,
-  addYears,
-  subYears,
-} from "date-fns";
+  todayString,
+  getWeekStart,
+  getWeekEnd,
+  fromDateString,
+  toDateString,
+} from "@/lib/dateUtils";
+
+import { api } from "../../convex/_generated/api";
+import type { Doc } from "../../convex/_generated/dataModel";
 
 export const Route = createFileRoute("/planning")({
   component: PlanningPage,
@@ -105,9 +102,8 @@ function PlanningPage() {
   }, [goals, prevActuals, weekStart, prevWeekStart, seedGoals]);
 
   const chartConfig = useMemo(
-    () =>
-      categories ? buildChartConfig(categories as Doc<"categories">[]) : {},
-    [categories]
+    () => (categories ? buildChartConfig(categories as Doc<"categories">[]) : {}),
+    [categories],
   );
 
   const goalMap = useMemo(() => {
@@ -123,10 +119,8 @@ function PlanningPage() {
   return (
     <div className="flex flex-col gap-4 p-4 md:gap-6 md:p-6">
       <div>
-        <h1 className="text-xl font-mono font-semibold text-foreground">
-          Planning
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <h1 className="text-foreground font-mono text-xl font-semibold">Planning</h1>
+        <p className="text-muted-foreground mt-1 text-sm">
           Set goals for how you want to spend your time.
         </p>
       </div>
@@ -141,27 +135,25 @@ function PlanningPage() {
 
       {!categories || !goals || !prevActuals ? (
         <div className="flex items-center justify-center py-12">
-          <p className="text-sm text-muted-foreground font-mono">Loading...</p>
+          <p className="text-muted-foreground font-mono text-sm">Loading...</p>
         </div>
       ) : (
         <div className="grid gap-6 lg:grid-cols-3">
-          <Card className="lg:col-span-2 p-4 gap-4 overflow-hidden min-w-0">
-            <h3 className="text-sm font-mono font-medium text-muted-foreground">
+          <Card className="min-w-0 gap-4 overflow-hidden p-4 lg:col-span-2">
+            <h3 className="text-muted-foreground font-mono text-sm font-medium">
               Weekly Hour Goals
             </h3>
             <WeeklyGoalSliders
               categories={categories as Doc<"categories">[]}
               goals={goals as { categoryId: string; goalHours: number }[]}
-              actuals={
-                prevActuals as { categoryId: string; totalHours: number }[]
-              }
+              actuals={prevActuals as { categoryId: string; totalHours: number }[]}
               weekStart={weekStart}
               maxHours={maxHours}
             />
           </Card>
 
-          <Card className="p-4 gap-4 overflow-hidden min-w-0">
-            <h3 className="text-sm font-mono font-medium text-muted-foreground">
+          <Card className="min-w-0 gap-4 overflow-hidden p-4">
+            <h3 className="text-muted-foreground font-mono text-sm font-medium">
               Planned Distribution
             </h3>
             <GoalPieChart

@@ -32,7 +32,9 @@ function hexToHsl(hex: string): [number, number, number] {
 }
 
 function hslToHex(h: number, s: number, l: number): string {
-  const hN = h / 360, sN = s / 100, lN = l / 100;
+  const hN = h / 360,
+    sN = s / 100,
+    lN = l / 100;
   const q = lN < 0.5 ? lN * (1 + sN) : lN + sN - lN * sN;
   const p = 2 * lN - q;
   const toRgb = (t: number) => {

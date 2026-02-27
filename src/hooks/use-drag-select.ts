@@ -6,10 +6,7 @@ interface UseDragSelectOptions {
   onDragEnd: () => void;
 }
 
-function getSlotIndexFromPoint(
-  clientX: number,
-  clientY: number
-): number | null {
+function getSlotIndexFromPoint(clientX: number, clientY: number): number | null {
   const el = document.elementFromPoint(clientX, clientY);
   const row = el?.closest("[data-slot-index]") as HTMLElement | null;
   if (!row) return null;
@@ -38,7 +35,7 @@ const AUTO_SCROLL_SPEED = 4;
 
 export function useDragSelect(
   gridRef: React.RefObject<HTMLDivElement | null>,
-  options: UseDragSelectOptions
+  options: UseDragSelectOptions,
 ) {
   const { focusedSlot, onSelectionChange, onDragEnd } = options;
 
@@ -89,7 +86,7 @@ export function useDragSelect(
       // Re-hit-test after scrolling
       const slotIndex = getSlotIndexFromPoint(
         rect.left + rect.width / 2,
-        Math.max(rect.top, Math.min(y, rect.bottom))
+        Math.max(rect.top, Math.min(y, rect.bottom)),
       );
       if (slotIndex !== null && slotIndex !== currentSlotRef.current) {
         currentSlotRef.current = slotIndex;
@@ -175,7 +172,7 @@ export function useDragSelect(
 
       startAutoScroll();
     },
-    [focusedSlot, gridRef, startAutoScroll]
+    [focusedSlot, gridRef, startAutoScroll],
   );
 
   // Escape cancels drag

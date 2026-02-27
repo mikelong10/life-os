@@ -1,5 +1,6 @@
-import { query, mutation, type QueryCtx, type MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
+
+import { query, mutation, type QueryCtx, type MutationCtx } from "./_generated/server";
 
 async function getAuthUserId(ctx: QueryCtx | MutationCtx): Promise<string> {
   const identity = await ctx.auth.getUserIdentity();
@@ -13,9 +14,7 @@ export const getByWeek = query({
     const userId = await getAuthUserId(ctx);
     return await ctx.db
       .query("weeklyGoals")
-      .withIndex("by_user_week", (q) =>
-        q.eq("userId", userId).eq("weekStart", args.weekStart),
-      )
+      .withIndex("by_user_week", (q) => q.eq("userId", userId).eq("weekStart", args.weekStart))
       .collect();
   },
 });
@@ -31,10 +30,7 @@ export const upsert = mutation({
     const existing = await ctx.db
       .query("weeklyGoals")
       .withIndex("by_user_week_category", (q) =>
-        q
-          .eq("userId", userId)
-          .eq("weekStart", args.weekStart)
-          .eq("categoryId", args.categoryId),
+        q.eq("userId", userId).eq("weekStart", args.weekStart).eq("categoryId", args.categoryId),
       )
       .unique();
 
@@ -59,9 +55,7 @@ export const seedFromPreviousWeek = mutation({
 
     const existing = await ctx.db
       .query("weeklyGoals")
-      .withIndex("by_user_week", (q) =>
-        q.eq("userId", userId).eq("weekStart", args.weekStart),
-      )
+      .withIndex("by_user_week", (q) => q.eq("userId", userId).eq("weekStart", args.weekStart))
       .first();
     if (existing) return;
 
@@ -72,10 +66,7 @@ export const seedFromPreviousWeek = mutation({
     const slots = await ctx.db
       .query("timeSlots")
       .withIndex("by_user_date", (q) =>
-        q
-          .eq("userId", userId)
-          .gte("date", args.previousWeekStart)
-          .lte("date", endDate),
+        q.eq("userId", userId).gte("date", args.previousWeekStart).lte("date", endDate),
       )
       .collect();
 
@@ -89,7 +80,7 @@ export const seedFromPreviousWeek = mutation({
       await ctx.db.insert("weeklyGoals", {
         userId,
         weekStart: args.weekStart,
-        categoryId: categoryId as typeof slots[0]["categoryId"],
+        categoryId: categoryId as (typeof slots)[0]["categoryId"],
         goalHours,
       });
     }

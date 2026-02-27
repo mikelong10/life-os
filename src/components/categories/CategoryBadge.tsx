@@ -16,14 +16,11 @@ export function CategoryBadge({
       className={cn(
         "inline-flex items-center gap-1.5 font-mono",
         size === "sm" ? "text-xs" : "text-sm",
-        className
+        className,
       )}
     >
       <span
-        className={cn(
-          "shrink-0 rounded-sm",
-          size === "sm" ? "h-2.5 w-2.5" : "h-3 w-3"
-        )}
+        className={cn("shrink-0 rounded-sm", size === "sm" ? "h-2.5 w-2.5" : "h-3 w-3")}
         style={{ backgroundColor: color }}
       />
       <span className="truncate">{name}</span>

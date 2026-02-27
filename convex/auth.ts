@@ -1,28 +1,20 @@
-import {
-  createClient,
-  type GenericCtx,
-} from "@convex-dev/better-auth";
+import { createClient, type GenericCtx } from "@convex-dev/better-auth";
 import { convex, crossDomain } from "@convex-dev/better-auth/plugins";
+import { betterAuth, type BetterAuthOptions } from "better-auth/minimal";
+
 import { components } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
 import { query } from "./_generated/server";
-import {
-  betterAuth,
-  type BetterAuthOptions,
-} from "better-auth/minimal";
 import authConfig from "./auth.config";
 import authSchema from "./betterAuth/schema";
 
 const siteUrl = process.env.SITE_URL ?? "";
 
-export const authComponent = createClient<DataModel, typeof authSchema>(
-  components.betterAuth,
-  {
-    local: {
-      schema: authSchema,
-    },
-  }
-);
+export const authComponent = createClient<DataModel, typeof authSchema>(components.betterAuth, {
+  local: {
+    schema: authSchema,
+  },
+});
 
 export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
   return {
@@ -38,10 +30,7 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
         clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
       },
     },
-    plugins: [
-      crossDomain({ siteUrl }),
-      convex({ authConfig }),
-    ],
+    plugins: [crossDomain({ siteUrl }), convex({ authConfig })],
   } satisfies BetterAuthOptions;
 };
 

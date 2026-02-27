@@ -1,10 +1,8 @@
 import { useMemo } from "react";
 import { PieChart, Pie, Cell } from "recharts";
-import {
-  ChartContainer,
-  ChartTooltip,
-  type ChartConfig,
-} from "@/components/ui/chart";
+
+import { ChartContainer, ChartTooltip, type ChartConfig } from "@/components/ui/chart";
+
 import type { Doc } from "../../../convex/_generated/dataModel";
 
 export function CategoryPieChart({
@@ -32,40 +30,35 @@ export function CategoryPieChart({
       .filter(Boolean);
   }, [summary, categories]);
 
-  const totalHours = useMemo(
-    () => data.reduce((sum, d) => sum + (d?.value ?? 0), 0),
-    [data]
-  );
+  const totalHours = useMemo(() => data.reduce((sum, d) => sum + (d?.value ?? 0), 0), [data]);
 
   if (data.length === 0) {
     return (
-      <div className="flex h-64 items-center justify-center text-sm text-muted-foreground font-mono">
+      <div className="text-muted-foreground flex h-64 items-center justify-center font-mono text-sm">
         No data for this period
       </div>
     );
   }
 
   return (
-    <ChartContainer config={chartConfig} className="h-64 w-full aspect-auto">
+    <ChartContainer config={chartConfig} className="aspect-auto h-64 w-full">
       <PieChart>
         <ChartTooltip
           content={({ active, payload }) => {
             if (!active || !payload?.length) return null;
             const entry = payload[0];
             return (
-              <div className="rounded-md border bg-popover px-3 py-2 shadow-md">
+              <div className="bg-popover rounded-md border px-3 py-2 shadow-md">
                 <div className="flex items-center gap-2">
                   <span
                     className="h-3 w-3 shrink-0 rounded-sm"
                     style={{ backgroundColor: entry.payload.fill }}
                   />
-                  <span className="text-sm font-mono text-popover-foreground">
-                    {entry.name}
-                  </span>
-                  <span className="text-sm font-mono font-semibold text-popover-foreground">
+                  <span className="text-popover-foreground font-mono text-sm">{entry.name}</span>
+                  <span className="text-popover-foreground font-mono text-sm font-semibold">
                     {entry.value}h
                   </span>
-                  <span className="text-sm font-mono text-muted-foreground">
+                  <span className="text-muted-foreground font-mono text-sm">
                     ({Math.round(((entry.value as number) / totalHours) * 100)}%)
                   </span>
                 </div>
@@ -94,7 +87,7 @@ export function CategoryPieChart({
           y="50%"
           textAnchor="middle"
           dominantBaseline="middle"
-          className="fill-foreground text-lg font-mono font-semibold"
+          className="fill-foreground font-mono text-lg font-semibold"
         >
           {totalHours.toFixed(1)}h
         </text>

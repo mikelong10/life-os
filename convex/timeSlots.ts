@@ -1,5 +1,6 @@
-import { query, mutation, type QueryCtx, type MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
+
+import { query, mutation, type QueryCtx, type MutationCtx } from "./_generated/server";
 
 async function getAuthUserId(ctx: QueryCtx | MutationCtx): Promise<string> {
   const identity = await ctx.auth.getUserIdentity();
@@ -13,9 +14,7 @@ export const getByDate = query({
     const userId = await getAuthUserId(ctx);
     return await ctx.db
       .query("timeSlots")
-      .withIndex("by_user_date", (q) =>
-        q.eq("userId", userId).eq("date", args.date),
-      )
+      .withIndex("by_user_date", (q) => q.eq("userId", userId).eq("date", args.date))
       .collect();
   },
 });
@@ -27,10 +26,7 @@ export const getByDateRange = query({
     return await ctx.db
       .query("timeSlots")
       .withIndex("by_user_date", (q) =>
-        q
-          .eq("userId", userId)
-          .gte("date", args.startDate)
-          .lte("date", args.endDate),
+        q.eq("userId", userId).gte("date", args.startDate).lte("date", args.endDate),
       )
       .collect();
   },
@@ -43,10 +39,7 @@ export const getCategorySummary = query({
     const slots = await ctx.db
       .query("timeSlots")
       .withIndex("by_user_date", (q) =>
-        q
-          .eq("userId", userId)
-          .gte("date", args.startDate)
-          .lte("date", args.endDate),
+        q.eq("userId", userId).gte("date", args.startDate).lte("date", args.endDate),
       )
       .collect();
 
@@ -76,10 +69,7 @@ export const upsert = mutation({
     const existing = await ctx.db
       .query("timeSlots")
       .withIndex("by_user_date_slot", (q) =>
-        q
-          .eq("userId", userId)
-          .eq("date", args.date)
-          .eq("slotIndex", args.slotIndex),
+        q.eq("userId", userId).eq("date", args.date).eq("slotIndex", args.slotIndex),
       )
       .unique();
 
@@ -113,10 +103,7 @@ export const bulkAssign = mutation({
       const existing = await ctx.db
         .query("timeSlots")
         .withIndex("by_user_date_slot", (q) =>
-          q
-            .eq("userId", userId)
-            .eq("date", args.date)
-            .eq("slotIndex", slotIndex),
+          q.eq("userId", userId).eq("date", args.date).eq("slotIndex", slotIndex),
         )
         .unique();
 
@@ -145,10 +132,7 @@ export const bulkRemove = mutation({
       const existing = await ctx.db
         .query("timeSlots")
         .withIndex("by_user_date_slot", (q) =>
-          q
-            .eq("userId", userId)
-            .eq("date", args.date)
-            .eq("slotIndex", slotIndex),
+          q.eq("userId", userId).eq("date", args.date).eq("slotIndex", slotIndex),
         )
         .unique();
 
@@ -166,10 +150,7 @@ export const remove = mutation({
     const existing = await ctx.db
       .query("timeSlots")
       .withIndex("by_user_date_slot", (q) =>
-        q
-          .eq("userId", userId)
-          .eq("date", args.date)
-          .eq("slotIndex", args.slotIndex),
+        q.eq("userId", userId).eq("date", args.date).eq("slotIndex", args.slotIndex),
       )
       .unique();
 

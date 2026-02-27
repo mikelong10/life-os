@@ -75,9 +75,9 @@ src/
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start dev server |
-| `npm run build` | Type-check and build for production |
-| `npm run preview` | Preview production build |
-| `npx convex dev` | Start Convex dev server |
+| Command           | Description                         |
+| ----------------- | ----------------------------------- |
+| `npm run dev`     | Start dev server                    |
+| `npm run build`   | Type-check and build for production |
+| `npm run preview` | Preview production build            |
+| `npx convex dev`  | Start Convex dev server             |

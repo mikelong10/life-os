@@ -1,8 +1,9 @@
 import { memo } from "react";
-import type { Doc } from "../../../convex/_generated/dataModel";
+
 import { slotIndexToTime } from "@/lib/slotUtils";
 import { cn } from "@/lib/utils";
 
+import type { Doc } from "../../../convex/_generated/dataModel";
 
 interface TimeSlotRowProps {
   slotIndex: number;
@@ -42,30 +43,28 @@ export const TimeSlotRow = memo(function TimeSlotRow({
       data-slot-index={slotIndex}
       onClick={handleClick}
       className={cn(
-        "flex max-w-full items-center gap-3 border-b px-3 py-1.5 cursor-pointer transition-colors overflow-hidden",
+        "flex max-w-full cursor-pointer items-center gap-3 overflow-hidden border-b px-3 py-1.5 transition-colors",
         "hover:bg-accent/50",
-        isFocused && "ring-1 ring-primary ring-inset",
-        isSelected && "bg-primary/10"
+        isFocused && "ring-primary ring-1 ring-inset",
+        isSelected && "bg-primary/10",
       )}
     >
-      <span className="w-20 shrink-0 text-xs font-mono text-muted-foreground tabular-nums">
+      <span className="text-muted-foreground w-20 shrink-0 font-mono text-xs tabular-nums">
         {timeLabel}
       </span>
       {isFilled ? (
-        <div className="flex flex-1 items-center gap-2 min-w-0">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
           <span
-            className="h-full w-1 self-stretch rounded-full shrink-0"
+            className="h-full w-1 shrink-0 self-stretch rounded-full"
             style={{ backgroundColor: category.color, minHeight: "1.25rem" }}
           />
-          <span className="text-sm font-mono shrink-0">{category.name}</span>
+          <span className="shrink-0 font-mono text-sm">{category.name}</span>
           {slot.note && (
-            <span className="text-xs font-mono text-muted-foreground truncate">
-              · {slot.note}
-            </span>
+            <span className="text-muted-foreground truncate font-mono text-xs">· {slot.note}</span>
           )}
         </div>
       ) : (
-        <div className="flex-1 border border-dashed border-border/50 rounded-md h-5" />
+        <div className="border-border/50 h-5 flex-1 rounded-md border border-dashed" />
       )}
     </div>
   );
