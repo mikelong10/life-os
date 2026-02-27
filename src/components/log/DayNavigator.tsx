@@ -22,7 +22,7 @@ export function DayNavigator({
         <ChevronLeft className="h-4 w-4" />
       </Button>
       <div className="flex items-center gap-2">
-        <h2 className="text-sm font-mono font-medium">
+        <h2 className="whitespace-nowrap text-sm font-mono font-medium">
           {formatDisplayDate(dateObj)}
         </h2>
         {!today && (

@@ -9,7 +9,7 @@ export function fromDateString(dateStr: string): Date {
 }
 
 export function formatDisplayDate(date: Date): string {
-  return format(date, "EEEE, MMMM d, yyyy");
+  return format(date, "EEEE, MMM d, yyyy");
 }
 
 export function getNextDay(dateStr: string): string {
