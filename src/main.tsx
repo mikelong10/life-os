@@ -1,13 +1,13 @@
+import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { ConvexReactClient, useConvexAuth } from "convex/react";
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
-import {
-  RouterProvider,
-  createRouter,
-} from "@tanstack/react-router";
-import { ConvexReactClient, useConvexAuth } from "convex/react";
-import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
+
 import { authClient } from "@/lib/auth-client";
+
 import { routeTree } from "./routeTree.gen";
+
 import "./index.css";
 
 export interface AuthContext {
@@ -15,10 +15,9 @@ export interface AuthContext {
   isLoading: boolean;
 }
 
-const convex = new ConvexReactClient(
-  import.meta.env.VITE_CONVEX_URL as string,
-  { expectAuth: true },
-);
+const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string, {
+  expectAuth: true,
+});
 
 const router = createRouter({
   routeTree,

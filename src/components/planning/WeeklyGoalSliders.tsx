@@ -1,8 +1,10 @@
-import { useState, useEffect, useMemo } from "react";
 import { useMutation } from "convex/react";
+import { useState, useEffect, useMemo } from "react";
+
+import { Slider } from "@/components/ui/slider";
+
 import { api } from "../../../convex/_generated/api";
 import type { Id, Doc } from "../../../convex/_generated/dataModel";
-import { Slider } from "@/components/ui/slider";
 
 export function WeeklyGoalSliders({
   categories,
@@ -74,14 +76,14 @@ export function WeeklyGoalSliders({
         return (
           <div key={cat._id} className="space-y-1.5">
             <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 min-w-0">
+              <div className="flex min-w-0 items-center gap-2">
                 <span
                   className="h-3 w-3 shrink-0 rounded-sm"
                   style={{ backgroundColor: cat.color }}
                 />
-                <span className="text-sm font-mono truncate">{cat.name}</span>
+                <span className="truncate font-mono text-sm">{cat.name}</span>
               </div>
-              <span className="text-sm font-mono font-medium text-foreground shrink-0">
+              <span className="text-foreground shrink-0 font-mono text-sm font-medium">
                 {goal.toFixed(1)}h
               </span>
             </div>
@@ -94,7 +96,7 @@ export function WeeklyGoalSliders({
               onValueCommit={([v]) => handleCommit(cat._id, v)}
               className="w-full"
             />
-            <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
+            <div className="text-muted-foreground flex items-center justify-between font-mono text-xs">
               <span>Last: {actual.toFixed(1)}h</span>
               <span>{(goal / 7).toFixed(1)}h/day</span>
             </div>
@@ -103,14 +105,14 @@ export function WeeklyGoalSliders({
       })}
 
       <div className="flex items-center justify-between border-t pt-3">
-        <span className="text-sm font-mono font-medium">Total</span>
+        <span className="font-mono text-sm font-medium">Total</span>
         <span
-          className={`text-sm font-mono font-medium ${
+          className={`font-mono text-sm font-medium ${
             totalGoalHours > maxHours ? "text-destructive" : ""
           }`}
         >
           {totalGoalHours.toFixed(1)}h / {maxHours}h{" "}
-          <span className="font-normal text-muted-foreground">
+          <span className="text-muted-foreground font-normal">
             ({(totalGoalHours / 7).toFixed(1)}h/d)
           </span>
         </span>

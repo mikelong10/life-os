@@ -3,9 +3,32 @@
  * Follows standard QWERTY keyboard row order.
  */
 const LETTER_SHORTCUTS = [
-  "q", "w", "e", "r", "t", "y", "u", "i", "o", "p",
-  "a", "s", "d", "f", "g", "h", "j", "k", "l",
-  "z", "x", "c", "v", "b", "n", "m",
+  "q",
+  "w",
+  "e",
+  "r",
+  "t",
+  "y",
+  "u",
+  "i",
+  "o",
+  "p",
+  "a",
+  "s",
+  "d",
+  "f",
+  "g",
+  "h",
+  "j",
+  "k",
+  "l",
+  "z",
+  "x",
+  "c",
+  "v",
+  "b",
+  "n",
+  "m",
 ] as const;
 
 /**
@@ -30,7 +53,7 @@ export function getCategoryIndexFromKey(key: string): number | null {
   const num = parseInt(key);
   if (!isNaN(num) && num >= 0 && num <= 9) return num;
   const letterIndex = LETTER_SHORTCUTS.indexOf(
-    key.toLowerCase() as (typeof LETTER_SHORTCUTS)[number]
+    key.toLowerCase() as (typeof LETTER_SHORTCUTS)[number],
   );
   if (letterIndex !== -1) return 10 + letterIndex;
   return null;

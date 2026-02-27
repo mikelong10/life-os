@@ -1,24 +1,5 @@
-import { useState, useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import type { Doc } from "../../convex/_generated/dataModel";
-import {
-  DateRangeFilter,
-  type DateRangeView,
-} from "@/components/analytics/DateRangeFilter";
-import { CategoryPieChart } from "@/components/analytics/CategoryPieChart";
-import { Card } from "@/components/ui/card";
-import { TrendLineChart } from "@/components/analytics/TrendLineChart";
-import { DayTimelineStrip } from "@/components/analytics/DayTimelineStrip";
-import { buildChartConfig } from "@/lib/chartUtils";
-import {
-  todayString,
-  getWeekStart,
-  getWeekEnd,
-  fromDateString,
-  toDateString,
-} from "@/lib/dateUtils";
 import {
   format,
   addDays,
@@ -34,6 +15,24 @@ import {
   startOfYear,
   endOfYear,
 } from "date-fns";
+import { useState, useMemo } from "react";
+
+import { CategoryPieChart } from "@/components/analytics/CategoryPieChart";
+import { DateRangeFilter, type DateRangeView } from "@/components/analytics/DateRangeFilter";
+import { DayTimelineStrip } from "@/components/analytics/DayTimelineStrip";
+import { TrendLineChart } from "@/components/analytics/TrendLineChart";
+import { Card } from "@/components/ui/card";
+import { buildChartConfig } from "@/lib/chartUtils";
+import {
+  todayString,
+  getWeekStart,
+  getWeekEnd,
+  fromDateString,
+  toDateString,
+} from "@/lib/dateUtils";
+
+import { api } from "../../convex/_generated/api";
+import type { Doc } from "../../convex/_generated/dataModel";
 
 export const Route = createFileRoute("/analytics")({
   component: AnalyticsPage,
@@ -124,7 +123,7 @@ function AnalyticsPage() {
 
   const chartConfig = useMemo(
     () => (categories ? buildChartConfig(categories as Doc<"categories">[]) : {}),
-    [categories]
+    [categories],
   );
 
   const trendGroupBy = view === "year" ? "month" : view === "month" ? "week" : "day";
@@ -132,12 +131,8 @@ function AnalyticsPage() {
   return (
     <div className="flex flex-col gap-4 p-4 md:gap-6 md:p-6">
       <div>
-        <h1 className="text-xl font-mono font-semibold text-foreground">
-          Analytics
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Review how you're spending your time.
-        </p>
+        <h1 className="text-foreground font-mono text-xl font-semibold">Analytics</h1>
+        <p className="text-muted-foreground mt-1 text-sm">Review how you're spending your time.</p>
       </div>
 
       <DateRangeFilter
@@ -150,13 +145,13 @@ function AnalyticsPage() {
 
       {!categories || !summary || !slots ? (
         <div className="flex items-center justify-center py-12">
-          <p className="text-sm text-muted-foreground font-mono">Loading...</p>
+          <p className="text-muted-foreground font-mono text-sm">Loading...</p>
         </div>
       ) : (
         <>
           <div className="grid gap-6 lg:grid-cols-[minmax(0,_320px)_1fr]">
-            <Card className="p-4 gap-4 overflow-hidden min-w-0">
-              <h3 className="text-sm font-mono font-medium text-muted-foreground">
+            <Card className="min-w-0 gap-4 overflow-hidden p-4">
+              <h3 className="text-muted-foreground font-mono text-sm font-medium">
                 Time Breakdown
               </h3>
               <CategoryPieChart
@@ -166,8 +161,8 @@ function AnalyticsPage() {
               />
             </Card>
 
-            <Card className="p-4 gap-4 overflow-hidden min-w-0">
-              <h3 className="text-sm font-mono font-medium text-muted-foreground">
+            <Card className="min-w-0 gap-4 overflow-hidden p-4">
+              <h3 className="text-muted-foreground font-mono text-sm font-medium">
                 {view === "day" ? "Day Timeline" : "Trends"}
               </h3>
               {view === "day" ? (
@@ -185,7 +180,6 @@ function AnalyticsPage() {
               )}
             </Card>
           </div>
-
         </>
       )}
     </div>

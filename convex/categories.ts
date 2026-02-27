@@ -1,5 +1,6 @@
-import { query, mutation, type QueryCtx, type MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
+
+import { query, mutation, type QueryCtx, type MutationCtx } from "./_generated/server";
 import { DEFAULT_CATEGORIES } from "./seed";
 
 async function getAuthUserId(ctx: QueryCtx | MutationCtx): Promise<string> {

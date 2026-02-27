@@ -22,7 +22,7 @@ export function ThemeProvider({
   defaultTheme?: Theme;
 }) {
   const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(STORAGE_KEY) as Theme) || defaultTheme
+    () => (localStorage.getItem(STORAGE_KEY) as Theme) || defaultTheme,
   );
 
   useEffect(() => {
@@ -53,16 +53,11 @@ export function ThemeProvider({
     },
   };
 
-  return (
-    <ThemeProviderContext value={value}>
-      {children}
-    </ThemeProviderContext>
-  );
+  return <ThemeProviderContext value={value}>{children}</ThemeProviderContext>;
 }
 
 export function useTheme() {
   const context = useContext(ThemeProviderContext);
-  if (context === undefined)
-    throw new Error("useTheme must be used within a ThemeProvider");
+  if (context === undefined) throw new Error("useTheme must be used within a ThemeProvider");
   return context;
 }

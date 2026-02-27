@@ -1,19 +1,11 @@
-import { useMemo } from "react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-} from "recharts";
-import {
-  ChartContainer,
-  ChartTooltip,
-  type ChartConfig,
-} from "@/components/ui/chart";
-import type { Doc } from "../../../convex/_generated/dataModel";
 import { format, parse } from "date-fns";
+import { useMemo } from "react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
+
+import { ChartContainer, ChartTooltip, type ChartConfig } from "@/components/ui/chart";
 import { useIsMobile } from "@/hooks/use-mobile";
+
+import type { Doc } from "../../../convex/_generated/dataModel";
 
 export function TrendLineChart({
   slots,
@@ -66,14 +58,14 @@ export function TrendLineChart({
 
   if (data.length === 0) {
     return (
-      <div className="flex h-64 items-center justify-center text-sm text-muted-foreground font-mono">
+      <div className="text-muted-foreground flex h-64 items-center justify-center font-mono text-sm">
         No data for this period
       </div>
     );
   }
 
   return (
-    <ChartContainer config={chartConfig} className="h-72 w-full aspect-auto">
+    <ChartContainer config={chartConfig} className="aspect-auto h-72 w-full">
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" vertical={false} />
         <XAxis
@@ -96,12 +88,16 @@ export function TrendLineChart({
           tickLine={false}
           axisLine={false}
           width={isMobile ? 30 : 60}
-          label={isMobile ? undefined : {
-            value: "hours",
-            angle: -90,
-            position: "insideLeft",
-            style: { fontSize: 11, fontFamily: "Geist Mono" },
-          }}
+          label={
+            isMobile
+              ? undefined
+              : {
+                  value: "hours",
+                  angle: -90,
+                  position: "insideLeft",
+                  style: { fontSize: 11, fontFamily: "Geist Mono" },
+                }
+          }
         />
         <ChartTooltip
           content={({ active, payload, label }) => {
@@ -114,12 +110,17 @@ export function TrendLineChart({
               if (groupBy === "month") {
                 formattedDate = format(parse(String(label), "yyyy-MM", new Date()), "MMM yyyy");
               } else {
-                formattedDate = format(parse(String(label), "yyyy-MM-dd", new Date()), "MMM d, yyyy");
+                formattedDate = format(
+                  parse(String(label), "yyyy-MM-dd", new Date()),
+                  "MMM d, yyyy",
+                );
               }
-            } catch { /* use raw label as fallback */ }
+            } catch {
+              /* use raw label as fallback */
+            }
             return (
-              <div className="rounded-md border bg-popover px-3 py-2 shadow-md">
-                <div className="mb-1 text-sm font-mono font-semibold text-popover-foreground">
+              <div className="bg-popover rounded-md border px-3 py-2 shadow-md">
+                <div className="text-popover-foreground mb-1 font-mono text-sm font-semibold">
                   {formattedDate}
                 </div>
                 <div className="flex flex-col gap-1">
@@ -131,10 +132,10 @@ export function TrendLineChart({
                           className="h-3 w-3 shrink-0 rounded-sm"
                           style={{ backgroundColor: cat?.color ?? (entry.color as string) }}
                         />
-                        <span className="text-sm font-mono text-popover-foreground">
+                        <span className="text-popover-foreground font-mono text-sm">
                           {cat?.name ?? entry.name}
                         </span>
-                        <span className="text-sm font-mono font-semibold text-popover-foreground">
+                        <span className="text-popover-foreground font-mono text-sm font-semibold">
                           {entry.value}h
                         </span>
                       </div>

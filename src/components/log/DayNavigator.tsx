@@ -1,5 +1,6 @@
-import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import { formatDisplayDate, isDateToday } from "@/lib/dateUtils";
 
 export function DayNavigator({
@@ -22,14 +23,14 @@ export function DayNavigator({
         <ChevronLeft className="h-4 w-4" />
       </Button>
       <div className="flex items-center gap-2">
-        <h2 className="whitespace-nowrap text-sm font-mono font-medium">
+        <h2 className="font-mono text-sm font-medium whitespace-nowrap">
           {formatDisplayDate(dateObj)}
         </h2>
         {!today && (
           <Button
             variant="outline"
             size="sm"
-            className="h-6 px-2 text-xs font-mono"
+            className="h-6 px-2 font-mono text-xs"
             onClick={onToday}
           >
             Today

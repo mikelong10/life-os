@@ -1,15 +1,12 @@
 import { useMemo } from "react";
-import type { Doc } from "../../../convex/_generated/dataModel";
+
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { SLOTS_PER_DAY } from "@/lib/constants";
 import { slotIndexToTimeRange } from "@/lib/slotUtils";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+
+import type { Doc } from "../../../convex/_generated/dataModel";
 
 const TIME_LABELS: { slotIndex: number; label: string }[] = [
   { slotIndex: 0, label: "12am" },
@@ -56,19 +53,17 @@ export function DayTimelineStrip({
 
   if (slots.length === 0) {
     return (
-      <div className="flex h-32 items-center justify-center text-sm text-muted-foreground font-mono">
+      <div className="text-muted-foreground flex h-32 items-center justify-center font-mono text-sm">
         No data for this period
       </div>
     );
   }
 
-  const visibleLabels = isMobile
-    ? TIME_LABELS.filter((l) => l.slotIndex !== 36)
-    : TIME_LABELS;
+  const visibleLabels = isMobile ? TIME_LABELS.filter((l) => l.slotIndex !== 36) : TIME_LABELS;
 
   return (
     <TooltipProvider delayDuration={100}>
-      <div className="flex h-8 rounded-md overflow-hidden border border-border">
+      <div className="border-border flex h-8 overflow-hidden rounded-md border">
         {Array.from({ length: SLOTS_PER_DAY }, (_, i) => {
           const slot = slotMap.get(i);
           const cat = slot ? categoryMap.get(slot.categoryId) : undefined;
@@ -77,8 +72,8 @@ export function DayTimelineStrip({
               <TooltipTrigger asChild>
                 <div
                   className={cn(
-                    "flex-1 h-full transition-opacity hover:opacity-80",
-                    !cat && "bg-muted"
+                    "h-full flex-1 transition-opacity hover:opacity-80",
+                    !cat && "bg-muted",
                   )}
                   style={cat ? { backgroundColor: cat.color } : undefined}
                 />
@@ -92,13 +87,13 @@ export function DayTimelineStrip({
         })}
       </div>
 
-      <div className="relative h-5 mt-1">
+      <div className="relative mt-1 h-5">
         {visibleLabels.map(({ slotIndex, label }) => (
           <span
             key={slotIndex}
             className={cn(
-              "absolute text-xs font-mono text-muted-foreground",
-              slotIndex === 0 ? "translate-x-0" : "-translate-x-1/2"
+              "text-muted-foreground absolute font-mono text-xs",
+              slotIndex === 0 ? "translate-x-0" : "-translate-x-1/2",
             )}
             style={{ left: `${(slotIndex / SLOTS_PER_DAY) * 100}%` }}
           >
@@ -115,9 +110,7 @@ export function DayTimelineStrip({
                 className="h-2.5 w-2.5 shrink-0 rounded-sm"
                 style={{ backgroundColor: cat.color }}
               />
-              <span className="text-xs font-mono text-muted-foreground">
-                {cat.name}
-              </span>
+              <span className="text-muted-foreground font-mono text-xs">{cat.name}</span>
             </div>
           ))}
         </div>

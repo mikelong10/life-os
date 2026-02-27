@@ -1,22 +1,24 @@
-import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import { useQuery, useMutation } from "convex/react";
+import { X } from "lucide-react";
+import { useState, useCallback, useRef, useMemo, useEffect } from "react";
+
+import { CategoryPicker } from "@/components/categories/CategoryPicker";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useDragSelect } from "@/hooks/use-drag-select";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { getCategoryIndexFromKey } from "@/lib/categoryShortcuts";
+import { SLOTS_PER_DAY } from "@/lib/constants";
+import { slotIndexToTimeRange } from "@/lib/slotUtils";
+import { cn } from "@/lib/utils";
+
 import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import type { Id } from "../../../convex/_generated/dataModel";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { CategoryPicker } from "@/components/categories/CategoryPicker";
-import { TimeSlotRow } from "./TimeSlotRow";
 import { MultiSelectBar } from "./MultiSelectBar";
-import { SLOTS_PER_DAY } from "@/lib/constants";
-import { slotIndexToTimeRange } from "@/lib/slotUtils";
-import { getCategoryIndexFromKey } from "@/lib/categoryShortcuts";
-import { X } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useDragSelect } from "@/hooks/use-drag-select";
-import { cn } from "@/lib/utils";
+import { TimeSlotRow } from "./TimeSlotRow";
 
 export function TimeGrid({ date }: { date: string }) {
   const slots = useQuery(api.timeSlots.getByDate, { date });
@@ -55,10 +57,10 @@ export function TimeGrid({ date }: { date: string }) {
           pendingScrollSlotRef.current = null;
           requestAnimationFrame(() => {
             const row = gridRef.current?.querySelector(
-              `[data-slot-index="${slotIndex}"]`
+              `[data-slot-index="${slotIndex}"]`,
             ) as HTMLElement | null;
             const viewport = gridRef.current?.querySelector(
-              '[data-slot="scroll-area-viewport"]'
+              '[data-slot="scroll-area-viewport"]',
             ) as HTMLElement | null;
             if (!row || !viewport) return;
             const visibleHeight = viewport.clientHeight - height;
@@ -98,10 +100,10 @@ export function TimeGrid({ date }: { date: string }) {
   const scrollSlotIntoView = useCallback(
     (index: number) => {
       const row = gridRef.current?.querySelector(
-        `[data-slot-index="${index}"]`
+        `[data-slot-index="${index}"]`,
       ) as HTMLElement | null;
       const viewport = gridRef.current?.querySelector(
-        '[data-slot="scroll-area-viewport"]'
+        '[data-slot="scroll-area-viewport"]',
       ) as HTMLElement | null;
       if (!row || !viewport) return;
 
@@ -118,7 +120,7 @@ export function TimeGrid({ date }: { date: string }) {
         viewport.scrollTop = rowTop - viewportHeight / 2 + rowHeight / 2;
       }
     },
-    [isMobile, bottomPanelHeight]
+    [isMobile, bottomPanelHeight],
   );
 
   const openEditor = useCallback(
@@ -127,7 +129,7 @@ export function TimeGrid({ date }: { date: string }) {
       setNote(slot?.note ?? "");
       setEditorSlot(index);
     },
-    [slotMap]
+    [slotMap],
   );
 
   const closeEditor = useCallback(() => {
@@ -136,27 +138,21 @@ export function TimeGrid({ date }: { date: string }) {
     gridRef.current?.focus();
   }, []);
 
-  const handleDragSelectionChange = useCallback(
-    (newSelection: Set<number>, anchor: number) => {
-      setSelectedSlots(newSelection);
-      setAnchorSlot(anchor);
-      if (newSelection.size > 1) {
-        setEditorSlot(null);
-      }
-    },
-    []
-  );
+  const handleDragSelectionChange = useCallback((newSelection: Set<number>, anchor: number) => {
+    setSelectedSlots(newSelection);
+    setAnchorSlot(anchor);
+    if (newSelection.size > 1) {
+      setEditorSlot(null);
+    }
+  }, []);
 
   const handleDragEnd = useCallback(() => {}, []);
 
-  const { isDragging, handlePointerDown, justFinishedDragRef } = useDragSelect(
-    gridRef,
-    {
-      focusedSlot,
-      onSelectionChange: handleDragSelectionChange,
-      onDragEnd: handleDragEnd,
-    }
-  );
+  const { isDragging, handlePointerDown, justFinishedDragRef } = useDragSelect(gridRef, {
+    focusedSlot,
+    onSelectionChange: handleDragSelectionChange,
+    onDragEnd: handleDragEnd,
+  });
 
   const handleSlotClick = useCallback(
     (index: number) => {
@@ -167,7 +163,7 @@ export function TimeGrid({ date }: { date: string }) {
       openEditor(index);
       if (isMobile) pendingScrollSlotRef.current = index;
     },
-    [openEditor, justFinishedDragRef, isMobile]
+    [openEditor, justFinishedDragRef, isMobile],
   );
 
   const handleShiftClick = useCallback(
@@ -186,7 +182,7 @@ export function TimeGrid({ date }: { date: string }) {
       setSelectedSlots(newSelection);
       setFocusedSlot(index);
     },
-    [anchorSlot]
+    [anchorSlot],
   );
 
   const handleCategorySelect = useCallback(
@@ -203,7 +199,7 @@ export function TimeGrid({ date }: { date: string }) {
       openEditor(nextSlot);
       scrollSlotIntoView(nextSlot);
     },
-    [editorSlot, date, note, upsertSlot, openEditor, scrollSlotIntoView]
+    [editorSlot, date, note, upsertSlot, openEditor, scrollSlotIntoView],
   );
 
   const handleClearSlot = useCallback(async () => {
@@ -361,81 +357,75 @@ export function TimeGrid({ date }: { date: string }) {
       scrollSlotIntoView,
       openEditor,
       closeEditor,
-    ]
+    ],
   );
 
   if (!slots || !categories) {
     return (
       <div className="flex items-center justify-center py-12">
-        <p className="text-sm text-muted-foreground font-mono">Loading...</p>
+        <p className="text-muted-foreground font-mono text-sm">Loading...</p>
       </div>
     );
   }
 
-  const editorContent = editorSlot !== null ? (
-    <>
-      <div className="flex items-center justify-between border-b px-3 py-2">
-        <span className="text-xs font-mono text-muted-foreground">
-          {slotIndexToTimeRange(editorSlot)}
-        </span>
-        <div className="flex items-center gap-1">
-          {isMobile && activeCategoryId && (
+  const editorContent =
+    editorSlot !== null ? (
+      <>
+        <div className="flex items-center justify-between border-b px-3 py-2">
+          <span className="text-muted-foreground font-mono text-xs">
+            {slotIndexToTimeRange(editorSlot)}
+          </span>
+          <div className="flex items-center gap-1">
+            {isMobile && activeCategoryId && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground hover:text-destructive h-6 px-1.5 text-xs"
+                onClick={handleClearSlot}
+              >
+                Clear slot
+              </Button>
+            )}
+            <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={closeEditor}>
+              <X className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </div>
+        <div className="space-y-3 p-3">
+          <CategoryPicker
+            onSelect={handleCategorySelect}
+            selectedId={activeCategoryId}
+            maxVisibleRows={isMobile ? 5 : undefined}
+          />
+          <div className="space-y-1.5">
+            <Label className="text-muted-foreground font-mono text-xs">Note</Label>
+            <Input
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              onBlur={handleNoteBlur}
+              placeholder="What were you doing?"
+              className="h-8 font-mono text-sm"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  (e.target as HTMLInputElement).blur();
+                }
+              }}
+            />
+          </div>
+          {!isMobile && activeCategoryId && (
             <Button
               variant="ghost"
               size="sm"
-              className="h-6 px-1.5 text-xs text-muted-foreground hover:text-destructive"
+              className="text-muted-foreground hover:text-destructive h-7 w-full text-xs"
               onClick={handleClearSlot}
             >
+              <X className="mr-1 h-3 w-3" />
               Clear slot
             </Button>
           )}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 w-6 p-0"
-            onClick={closeEditor}
-          >
-            <X className="h-3.5 w-3.5" />
-          </Button>
         </div>
-      </div>
-      <div className="p-3 space-y-3">
-        <CategoryPicker
-          onSelect={handleCategorySelect}
-          selectedId={activeCategoryId}
-          maxVisibleRows={isMobile ? 5 : undefined}
-        />
-        <div className="space-y-1.5">
-          <Label className="text-xs font-mono text-muted-foreground">
-            Note
-          </Label>
-          <Input
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            onBlur={handleNoteBlur}
-            placeholder="What were you doing?"
-            className="h-8 text-sm font-mono"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                (e.target as HTMLInputElement).blur();
-              }
-            }}
-          />
-        </div>
-        {!isMobile && activeCategoryId && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-7 w-full text-xs text-muted-foreground hover:text-destructive"
-            onClick={handleClearSlot}
-          >
-            <X className="h-3 w-3 mr-1" />
-            Clear slot
-          </Button>
-        )}
-      </div>
-    </>
-  ) : null;
+      </>
+    ) : null;
 
   return (
     <>
@@ -446,19 +436,17 @@ export function TimeGrid({ date }: { date: string }) {
           tabIndex={0}
           role="grid"
           className={cn(
-            "flex flex-col flex-1 min-w-0 min-h-0 outline-none",
-            isDragging && "cursor-grabbing select-none"
+            "flex min-h-0 min-w-0 flex-1 flex-col outline-none",
+            isDragging && "cursor-grabbing select-none",
           )}
           onKeyDown={handleKeyDown}
           onPointerDown={handlePointerDown}
         >
-          <ScrollArea className="flex-1 min-h-0 [&_[data-slot=scroll-area-viewport]>div]:block!">
+          <ScrollArea className="min-h-0 flex-1 [&_[data-slot=scroll-area-viewport]>div]:block!">
             <div style={{ paddingBottom: isMobile && editorSlot !== null ? bottomPanelHeight : 0 }}>
               {Array.from({ length: SLOTS_PER_DAY }, (_, i) => {
                 const slot = slotMap.get(i);
-                const category = slot
-                  ? categoryMap.get(slot.categoryId) ?? null
-                  : undefined;
+                const category = slot ? (categoryMap.get(slot.categoryId) ?? null) : undefined;
 
                 return (
                   <TimeSlotRow
@@ -479,9 +467,7 @@ export function TimeGrid({ date }: { date: string }) {
 
         {/* Desktop: Editor side panel */}
         {!isMobile && editorContent && (
-          <div className="w-96 shrink-0 border-l bg-card">
-            {editorContent}
-          </div>
+          <div className="bg-card w-96 shrink-0 border-l">{editorContent}</div>
         )}
       </div>
 
@@ -489,7 +475,7 @@ export function TimeGrid({ date }: { date: string }) {
       {isMobile && editorContent && (
         <div
           ref={bottomPanelRef}
-          className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] left-0 right-0 z-40 border-t bg-card shadow-[0_-2px_10px_rgba(0,0,0,0.1)]"
+          className="bg-card fixed right-0 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] left-0 z-40 border-t shadow-[0_-2px_10px_rgba(0,0,0,0.1)]"
         >
           {editorContent}
         </div>

@@ -78,7 +78,7 @@ export function useSortable({ itemCount, onReorder, getLabel }: UseSortableOptio
         }
       }
     },
-    [updateCloneLabel]
+    [updateCloneLabel],
   );
 
   const handlePointerUp = useCallback(async () => {
@@ -138,9 +138,7 @@ export function useSortable({ itemCount, onReorder, getLabel }: UseSortableOptio
       setOverIndex(index);
 
       // Create a visual clone of the dragged row
-      const row = (e.target as HTMLElement).closest(
-        "[data-sortable-index]"
-      ) as HTMLElement | null;
+      const row = (e.target as HTMLElement).closest("[data-sortable-index]") as HTMLElement | null;
       if (row) {
         const rect = row.getBoundingClientRect();
         offsetRef.current = {
@@ -166,7 +164,7 @@ export function useSortable({ itemCount, onReorder, getLabel }: UseSortableOptio
         });
       }
     },
-    [itemCount]
+    [itemCount],
   );
 
   return { dragIndex, overIndex, isDragging, handlePointerDown };
