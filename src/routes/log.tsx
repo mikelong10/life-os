@@ -1,16 +1,47 @@
+import { useQuery } from "convex/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 
 import { DayNavigator } from "@/components/log/DayNavigator";
 import { TimeGrid } from "@/components/log/TimeGrid";
+import { SLOTS_PER_DAY } from "@/lib/constants";
 import { todayString, getNextDay, getPrevDay } from "@/lib/dateUtils";
+
+import { api } from "../../convex/_generated/api";
 
 export const Route = createFileRoute("/log")({
   component: LogPage,
 });
 
 function LogPage() {
-  const [date, setDate] = useState(todayString);
+  const latestSlot = useQuery(api.timeSlots.getLatestSlot);
+
+  if (latestSlot === undefined) {
+    return (
+      <div className="flex h-[calc(100dvh-6.5rem-env(safe-area-inset-bottom,0px))] items-center justify-center md:h-full">
+        <p className="text-muted-foreground font-mono text-sm">Loading...</p>
+      </div>
+    );
+  }
+
+  return <LogPageInner latestSlot={latestSlot} />;
+}
+
+function LogPageInner({
+  latestSlot,
+}: {
+  latestSlot: { date: string; slotIndex: number } | null;
+}) {
+  const [date, setDate] = useState(() => {
+    if (!latestSlot) return todayString();
+    const today = todayString();
+    const resumeDate =
+      latestSlot.slotIndex < SLOTS_PER_DAY - 1
+        ? latestSlot.date
+        : getNextDay(latestSlot.date);
+    return resumeDate < today ? resumeDate : today;
+  });
+
   const goToPrevDay = useCallback(() => {
     setDate((currentDate) => getPrevDay(currentDate));
   }, []);
