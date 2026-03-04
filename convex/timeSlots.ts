@@ -8,6 +8,19 @@ async function getAuthUserId(ctx: QueryCtx | MutationCtx): Promise<string> {
   return identity.tokenIdentifier;
 }
 
+export const getLatestSlot = query({
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    const latest = await ctx.db
+      .query("timeSlots")
+      .withIndex("by_user_date_slot", (q) => q.eq("userId", userId))
+      .order("desc")
+      .first();
+    if (!latest) return null;
+    return { date: latest.date, slotIndex: latest.slotIndex };
+  },
+});
+
 export const getByDate = query({
   args: { date: v.string() },
   handler: async (ctx, args) => {
